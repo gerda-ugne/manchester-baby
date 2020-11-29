@@ -11,6 +11,8 @@
 
 /*METHODS OF THE SIMULATOR*/
 
+/*Initializes values of the variables to default*/
+void initializeValues();
 /*Runs the Manchester Baby simulator*/
 void runSimulator();
 /*Increments the control instruction*/
