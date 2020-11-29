@@ -23,5 +23,7 @@ void fetch();
 void decode();
 /*Displays all relevant data*/
 void display();
+/*Loads the machine code from the Assembler generated file*/
+void loadCode();
 
 #endif

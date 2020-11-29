@@ -19,6 +19,7 @@ int presentInstruction[];
 
 int main()
 {
+    initializeValues();
     runSimulator();
     return 0;
 }
