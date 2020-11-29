@@ -1,0 +1,7 @@
+#include <stdio.h>
+#include "assembler.h"
+
+int main()
+{
+    return 0;
+}
