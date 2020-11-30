@@ -10,7 +10,7 @@ static int bits = 32;
 
 
 /*Containts the machine memory of size bits x bits*/
-int store[];
+int store[][];
 /*Containts the register of the machine, size of bits*/
 int accumulator[];
 /*Holds the opcode of the instruction to execute*/
