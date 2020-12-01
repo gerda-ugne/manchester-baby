@@ -18,7 +18,13 @@
 void incrementCI();
 /* Allocates memory for the accumulator and the present instruction.*/
 int allocateMemory();
-/*  Changes the bit value for the program. */
+/*Frees the memory that has been allocated.*/
+void freeMemory();
+/*Initializes the values for the store*/
+int initialiseStore();
+/*Frees the allocated memory of the store*/
+void freeStore();
+/*Changes the bit value for the program. */
 void changeBits (int newValue);
 /*Runs the Manchester Baby simulator*/
 void runSimulator();

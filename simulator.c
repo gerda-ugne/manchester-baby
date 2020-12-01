@@ -52,8 +52,34 @@ int allocateMemory()
 {
     accumulator = (int*)malloc(sizeof(int));
     presentInstruction = (int*)malloc(sizeof(int));
-    return (accumulator==NULL || presentInstruction==NULL) ? MEMORY_ALLOCATION_ERROR: SUCCESS;
+    initialiseStore();
+    
+    return (accumulator==NULL || presentInstruction==NULL || store==NULL ) ? MEMORY_ALLOCATION_ERROR: SUCCESS;
 }
+
+/**
+ * Frees the memory that has been allocated.
+ * */
+void freeMemory()
+{
+    free(accumulator);
+    free(presentInstruction);
+
+    //To implement
+    freeStore();
+
+}
+
+int initialiseStore()
+{
+    return 1;
+}
+
+void freeStore()
+{
+
+}
+
 /**
  * Changes the bit value for the program. 
  * Default is 32.
