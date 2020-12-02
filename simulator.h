@@ -6,6 +6,7 @@
 #define MEMORY_ALLOCATION_ERROR  102   
 #define INVALID_OPERATION        103
 #define FILE_IO_ERROR            104
+#define INVALID_FETCH            105
 #define OUT_OF_BOUNDARIES        106
 #define INVALID_MACHINE_CODE     107
 
