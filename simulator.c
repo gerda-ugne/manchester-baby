@@ -218,7 +218,9 @@ int freeStore()
 }
 
 /* Resets Store to its default values if an error was detected in a machine code while its values were in the
-process of being stored in Store*/
+process of being stored in Store
+@param row - a number of row at which to start resetting the values of Store in backward manner
+*/
 void resetStore(int row)
 {
     for(int i = row; i >= 0; --i)
