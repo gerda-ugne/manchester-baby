@@ -4,7 +4,7 @@
 /*ERROR CODES*/
 
 #define SUCCESS                  100
-#define INVALID_PARAMETER  101
+#define INVALID_PARAMETER  		 101
 #define MEMORY_ALLOCATION_ERROR  102   
 #define INVALID_OPERATION        103
 #define FILE_IO_ERROR            104
@@ -34,6 +34,12 @@ void incrementCI();
 int fetch();
 /*Decodes the fetch instruction*/
 void decode();
+/*Transforms backwards binary code to integer*/
+int convertBinaryToInt(int *binaryArray);
+/*Raises number to a power*/
+int raiseToPower(int number, int power);
+/*Executes the instruction, returns -1 if program has ended*/
+int execute();
 /*Displays all relevant data*/
 void display();
 /*Loads the machine code from the Assembler generated file*/
