@@ -27,6 +27,12 @@ void incrementCI();
 int fetch();
 /*Decodes the fetch instruction*/
 void decode();
+/*Transforms backwards binary code to integer*/
+int convertBinaryToInt(int *binaryArray);
+/*Raises number to a power*/
+int raiseToPower(int number, int power);
+/*Executes the instruction, returns -1 if program has ended*/
+int execute();
 /*Displays all relevant data*/
 void display();
 /*Loads the machine code from the Assembler generated file*/
