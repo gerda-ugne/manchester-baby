@@ -48,6 +48,9 @@ void displayStore();
 int freeStore();
 /*Resets Store to its default values*/
 void resetStore(int row);
-
+/*Displays the contents of the accumulator*/
+void displayAccumulator();
+/*Displays the contents of the present instruction*/
+void displayPresentInstruction();
 
 #endif
