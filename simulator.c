@@ -2,8 +2,9 @@
 #include <string.h> 
 #include <stdlib.h>
 #include "simulator.h"
+
 /*Holds the default instruction set of the machine*/
-static const int instructionSet[8];
+static int instructionSet[8];
 /*Holds the adress of the current line in store for the next instruction fetch*/
 static int controlInstruction = 0;
 /*Defines the memory size of the machine*/
@@ -17,26 +18,6 @@ static int* presentInstruction;
 /*Indicates which line of the store the present intruction should operate on*/
 static int lineNumber;
 
-int main()
-{
-    
-    //Void to avoid compilator complaints
-    (void)instructionSet;
-
-    // allocateMemory();
-    // runSimulator(store);
-
-    //Testing machine's memory with capacity of 32x32 bits
-    allocateMemory();
-    displayStore();
-    fillStore("BabyTest1-MC.txt");
-
-    runSimulator();
-    freeMemory();
-
-    return 0;
-}
-
 /**
  * Runs the Manchester Baby simulator
  * */
@@ -44,6 +25,8 @@ void runSimulator()
 {
     incrementCI();
     fetch();
+    displayAccumulator();
+    
 }
 
 /**
@@ -278,7 +261,36 @@ void displayStore()
         }
         printf("\n");
     }
+
+    printf("\n");
 }
+
+/**
+ * Displays the contents of the accumulator
+ * */
+void displayAccumulator()
+{
+    for(int i=0; i<bits; i++)
+    {
+        printf("%d ", accumulator[i]);
+    }
+
+    printf("\n");
+}
+
+/**
+ * Displays the contents of the present instruction
+ * */
+void displayPresentInstruction()
+{
+    for(int i=0; i<bits; i++)
+    {
+        printf("%d ", presentInstruction[i]);
+    }
+
+    printf("\n");
+}
+
 /*Frees the memory of Store
 *@return SUCCESS if memory was freed successfully*/
 int freeStore()
