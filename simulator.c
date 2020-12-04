@@ -21,18 +21,18 @@ int main()
 {
     
     //Void to avoid compilator complaints
-    //(void)instructionSet;
+    (void)instructionSet;
 
     // allocateMemory();
     // runSimulator(store);
 
     //Testing machine's memory with capacity of 32x32 bits
-    initialiseStore();
+    allocateMemory();
     displayStore();
-    printf("\n");
     fillStore("BabyTest1-MC.txt");
-    displayStore();
-    freeStore();
+
+    runSimulator();
+    freeMemory();
 
     return 0;
 }
@@ -60,8 +60,8 @@ void incrementCI()
 */
 int allocateMemory()
 {
-    accumulator = (int*)malloc(sizeof(int));
-    presentInstruction = (int*)malloc(sizeof(int));
+    accumulator = (int*)calloc(bits, sizeof(int));
+    presentInstruction = (int*)calloc(bits, sizeof(int));
     initialiseStore();
     
     return (accumulator==NULL || presentInstruction==NULL || store==NULL ) ? MEMORY_ALLOCATION_ERROR: SUCCESS;
@@ -74,8 +74,6 @@ void freeMemory()
 {
     free(accumulator);
     free(presentInstruction);
-
-    //To implement
     freeStore();
 
 }
@@ -183,6 +181,8 @@ int execute()
 		case 7: //STP
 			return -1;
 	}
+
+    return -1;
 }
   
 /*Initialises  Store to its default values 0 
@@ -191,18 +191,15 @@ int execute()
 int initialiseStore()
 {
     store = (int**)malloc(sizeof(int*)*bits);
-    if(store == NULL)
-        return MEMORY_ALLOCATION_ERROR;
+    if(store == NULL) return MEMORY_ALLOCATION_ERROR;
+
+    
     for(int i =0; i<bits; i++)
     {
-        store[i]=(int*)malloc(sizeof(int)*bits);
-        if(store[i] == NULL)
-            return MEMORY_ALLOCATION_ERROR;
-        for(int j=0; j<bits; j++)
-        {
-            store[i][j] = 0;
-        }
+        store[i]=(int*)calloc(bits, sizeof(int)*bits);
+        if(store[i] == NULL) return MEMORY_ALLOCATION_ERROR;
     }
+
     return SUCCESS;
 }
 /*Reads  a machine code from a text file and stores it in a Store
@@ -290,6 +287,7 @@ int freeStore()
     { 
         free(store[i]); 
     }
+    
     free(store);
     return SUCCESS;
 }
