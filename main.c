@@ -2,7 +2,7 @@
 #include <string.h> 
 #include <stdlib.h>
 #include "simulator.h"
-
+#include "simulator.c"
 int main()
 {
 
