@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include "simulator.h"
 
-/*Holds the default instruction set of the machine*/
-static int instructionSet[8];
 /*Holds the adress of the current line in store for the next instruction fetch*/
 static int controlInstruction = 0;
 /*Defines the memory size of the machine*/
@@ -17,15 +15,26 @@ static int* accumulator;
 static int* presentInstruction;
 /*Indicates which line of the store the present intruction should operate on*/
 static int lineNumber;
+/*Holds the fetched instruction line*/
+static int* fetchedInstruction;
 
 /**
  * Runs the Manchester Baby simulator
  * */
 void runSimulator()
 {
-    incrementCI();
-    fetch();
-    displayAccumulator();
+    int fetchStatus = 0;
+    int executeStatus = 0;
+    //While there are lines to fetch and the loop is not halted
+    while(fetchStatus!=INVALID_FETCH && executeStatus != -1)
+    {
+        incrementCI();
+        fetchStatus = fetch();
+        decode();
+        executeStatus = execute();
+        displayAccumulator();
+
+    }
     
 }
 
@@ -45,6 +54,7 @@ int allocateMemory()
 {
     accumulator = (int*)calloc(bits, sizeof(int));
     presentInstruction = (int*)calloc(bits, sizeof(int));
+    fetchedInstruction = (int*)calloc(bits, sizeof(int));
     initialiseStore();
     
     return (accumulator==NULL || presentInstruction==NULL || store==NULL ) ? MEMORY_ALLOCATION_ERROR: SUCCESS;
@@ -57,6 +67,7 @@ void freeMemory()
 {
     free(accumulator);
     free(presentInstruction);
+    free(fetchedInstruction);
     freeStore();
 
 }
@@ -80,12 +91,21 @@ void changeBits (int newValue)
 int fetch()
 {   
     //Check if variables had space allocated
-    if(accumulator==NULL) return INVALID_PARAMETER;
+    if(fetchedInstruction == NULL) return INVALID_PARAMETER;
     if(store == NULL) return INVALID_PARAMETER;
 
     //If there is nothing to fetch return error
-    if(store[controlInstruction]==NULL) return INVALID_FETCH;
-    memcpy(accumulator, store[controlInstruction], bits*sizeof(int));
+    if(store[controlInstruction]==NULL) 
+    {
+        //Reset the accumulator
+        free(fetchedInstruction);
+        fetchedInstruction = (int*)calloc(bits, sizeof(int));
+        return INVALID_FETCH;
+    }
+    else
+    {
+        memcpy(fetchedInstruction, store[controlInstruction], bits*sizeof(int));
+    }
 
 
     return SUCCESS;

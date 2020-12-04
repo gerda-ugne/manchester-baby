@@ -21,8 +21,6 @@ void freeMemory();
 void changeBits (int newValue);
 /*Runs the Manchester Baby simulator*/
 void runSimulator();
-/*Increments the control instruction*/
-void incrementCI();
 /*Fetches instructions from the store*/
 int fetch();
 /*Decodes the fetch instruction*/
