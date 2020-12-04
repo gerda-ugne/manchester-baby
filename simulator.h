@@ -12,7 +12,7 @@
 
 /*METHODS OF THE SIMULATOR*/
 /* Increments the control instruction by 1.*/
-int incrementCI();
+void incrementCI();
 /* Allocates memory for the accumulator and the present instruction.*/
 int allocateMemory();
 /*Frees the memory that has been allocated.*/

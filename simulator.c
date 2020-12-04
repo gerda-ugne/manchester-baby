@@ -37,7 +37,7 @@ void runSimulator()
 /**
  * Increments the control instruction by 1.
  * */
-int incrementCI()
+void incrementCI()
 {
     controlInstruction++;
 }
