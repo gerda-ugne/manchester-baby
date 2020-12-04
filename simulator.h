@@ -12,7 +12,7 @@
 
 /*METHODS OF THE SIMULATOR*/
 /* Increments the control instruction by 1.*/
-void incrementCI();
+int incrementCI();
 /* Allocates memory for the accumulator and the present instruction.*/
 int allocateMemory();
 /*Frees the memory that has been allocated.*/
@@ -21,8 +21,6 @@ void freeMemory();
 void changeBits (int newValue);
 /*Runs the Manchester Baby simulator*/
 void runSimulator();
-/*Increments the control instruction*/
-void incrementCI();
 /*Fetches instructions from the store*/
 int fetch();
 /*Decodes the fetch instruction*/

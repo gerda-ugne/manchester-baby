@@ -8,7 +8,7 @@ int main()
 
     allocateMemory();
     fillStore("BabyTest1-MC.txt");
-    displayStore();
+    //displayStore();
 
     runSimulator();
     freeMemory();

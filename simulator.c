@@ -23,16 +23,21 @@ static int lineNumber;
  * */
 void runSimulator()
 {
-    incrementCI();
-    fetch();
-    displayAccumulator();
+    int fetchStatus = 0;
+    while(fetchStatus!=INVALID_FETCH)
+    {
+        incrementCI();
+        fetchStatus = fetch();
+        displayAccumulator();
+
+    }
     
 }
 
 /**
  * Increments the control instruction by 1.
  * */
-void incrementCI()
+int incrementCI()
 {
     controlInstruction++;
 }
@@ -84,8 +89,17 @@ int fetch()
     if(store == NULL) return INVALID_PARAMETER;
 
     //If there is nothing to fetch return error
-    if(store[controlInstruction]==NULL) return INVALID_FETCH;
-    memcpy(accumulator, store[controlInstruction], bits*sizeof(int));
+    if(store[controlInstruction]==NULL) 
+    {
+        //Reset the accumulator
+        free(accumulator);
+        accumulator = (int*)calloc(bits, sizeof(int));
+        return INVALID_FETCH;
+    }
+    else
+    {
+        memcpy(accumulator, store[controlInstruction], bits*sizeof(int));
+    }
 
 
     return SUCCESS;
