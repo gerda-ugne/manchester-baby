@@ -183,6 +183,7 @@ int execute()
 		case 7: //STP
 			return -1;
 	}
+}
   
 /*Initialises  Store to its default values 0 
 @return SUCCESS if initialization was successful otherwise MEMORY_ALLOCATION_ERROR was detected
@@ -224,7 +225,7 @@ int fillStore(char fileName[] )
     //While there is a new line and the number of lines in memory is not exceeded
     while((fgets(line, 256,f) != NULL) && counter < bits)    
     {
-        int len=strlen(line);
+        int len =strlen(line);
 
         //Validation: checking if a program is not 64bits when the memory can hold only 32bits
         if(bits == 32 && len > 60)
@@ -234,7 +235,7 @@ int fillStore(char fileName[] )
         }
         
         //Making sure that if memory is of 64 bits, a program of 32 bits could be stored 
-        int index=bits;
+        int index = bits;
         if(len < 40 && bits == 64) 
             index =32;
         else if(bits > 40)
