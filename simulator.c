@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include "simulator.h"
 
-/*Holds the default instruction set of the machine*/
-static int instructionSet[8];
 /*Holds the adress of the current line in store for the next instruction fetch*/
 static int controlInstruction = 0;
 /*Defines the memory size of the machine*/
@@ -34,7 +32,6 @@ void runSimulator()
         fetchStatus = fetch();
         decode();
         executeStatus = execute();
-
         displayAccumulator();
 
     }
