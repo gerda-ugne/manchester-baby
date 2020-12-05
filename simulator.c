@@ -65,6 +65,7 @@ int allocateMemory()
  * */
 void freeMemory()
 {
+    free(negOperand(store[lineNumber]));
     free(accumulator);
     free(presentInstruction);
     free(fetchedInstruction);
