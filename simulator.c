@@ -12,11 +12,9 @@ static int** store;
 /*Containts the register of the machine, size of bits*/
 static int* accumulator;
 /*Holds the opcode of the instruction to execute*/
-static int* presentInstruction;
+static int* presentInstruction; 
 /*Indicates which line of the store the present intruction should operate on*/
 static int lineNumber;
-/*Holds the fetched instruction line*/
-static int* fetchedInstruction;
 
 /**
  * Runs the Manchester Baby simulator
@@ -25,19 +23,39 @@ void runSimulator()
 {
     int fetchStatus = 0;
     int executeStatus = 0;
+    int function = 0;
+
     //While there are lines to fetch and the loop is not halted
     while(fetchStatus!=INVALID_FETCH && executeStatus != -1)
     {
+        printf("\nIncrementing Control Instruction... \n");
         incrementCI();
         fetchStatus = fetch();
-        decode();
-        executeStatus = execute();
-        displayAccumulator();
+        function = decode();
+        printf("Control instruction: %d \n", controlInstruction);
+        printf("FUNCTION: %d, LINE NUMBER(OPERAND): %d \n",function, lineNumber);
 
+        executeStatus = execute(function);
+
+        printf("Store @ Line Number:" );
+        displayStoreAtLine();
+
+        printf("\nPresent instruction: ");
+        displayPresentInstruction();
+
+        printf("Accumulator: ");
+        displayAccumulator();
     }
     
 }
 
+void displayStoreAtLine()
+{
+    for(int i=0; i<bits; i++)
+    {
+        printf("%d ", store[lineNumber][i]);
+    }
+}
 /**
  * Increments the control instruction by 1.
  * */
@@ -54,7 +72,6 @@ int allocateMemory()
 {
     accumulator = (int*)calloc(bits, sizeof(int));
     presentInstruction = (int*)calloc(bits, sizeof(int));
-    fetchedInstruction = (int*)calloc(bits, sizeof(int));
     initialiseStore();
     
     return (accumulator==NULL || presentInstruction==NULL || store==NULL ) ? MEMORY_ALLOCATION_ERROR: SUCCESS;
@@ -68,7 +85,6 @@ void freeMemory()
     free(negOperand(store[lineNumber]));
     free(accumulator);
     free(presentInstruction);
-    free(fetchedInstruction);
     freeStore();
 
 }
@@ -92,20 +108,20 @@ void changeBits (int newValue)
 int fetch()
 {   
     //Check if variables had space allocated
-    if(fetchedInstruction == NULL) return INVALID_PARAMETER;
+    if(presentInstruction == NULL) return INVALID_PARAMETER;
     if(store == NULL) return INVALID_PARAMETER;
 
     //If there is nothing to fetch return error
     if(store[controlInstruction]==NULL) 
     {
         //Reset the accumulator
-        free(fetchedInstruction);
-        fetchedInstruction = (int*)calloc(bits, sizeof(int));
+        free(presentInstruction);
+        presentInstruction = (int*)calloc(bits, sizeof(int));
         return INVALID_FETCH;
     }
     else
     {
-        memcpy(fetchedInstruction, store[controlInstruction], bits*sizeof(int));
+        memcpy(presentInstruction, store[controlInstruction], bits*sizeof(int));
     }
 
 
@@ -114,10 +130,12 @@ int fetch()
 }
 
 /*Decodes the fetch instruction*/
-void decode()
+int decode()
 {
-	lineNumber=accumulator[0]+accumulator[1]*2+accumulator[2]*4+accumulator[3]*8+accumulator[4]*16;
-	*presentInstruction=accumulator[13]+accumulator[14]*2+accumulator[15]*4;
+	lineNumber=presentInstruction[0]+presentInstruction[1]*2+presentInstruction[2]*4+presentInstruction[3]*8+presentInstruction[4]*16;
+	int function =  presentInstruction[13]+presentInstruction[14]*2+presentInstruction[15]*4;
+
+    return function;
 }
 
 /*Converts a binary number to an integer.
@@ -150,12 +168,12 @@ int raiseToPower(int number, int power)
 }
 
 /*Executes the decoded instruction, returns -1 if program has ended, or SUCCESS if instruction successfully executed*/
-int execute()
+int execute(int function)
 {
-	switch(*presentInstruction) {
+	switch(function) {
 		// Jump to the instruction at the address obtained from the specified memory address at lineNumber
 		case 0: //JMP
-			controlInstruction=*store[lineNumber];
+			controlInstruction= lineNumber;
 			return SUCCESS;
 		// Jump to the instruction at controlInstruction plus lineNumber
 		case 1: //JRP
@@ -172,11 +190,11 @@ int execute()
 			return SUCCESS;
 		// Subtracts number at store[lineNumber] from accumulator
 		case 4: //SUB
-			accumulator-=convertBinaryToInt(store[lineNumber]);
+			*accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
-			accumulator-=convertBinaryToInt(store[lineNumber]);
+			*accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
 			return SUCCESS;
 		// If accumulator contains a negative value, skip next instruction
 		case 6: //CMP
@@ -188,6 +206,25 @@ int execute()
 	}
 
     return -1;
+}
+
+/**
+ * Subtracts two binary numbers.
+ * @param binary1 - first binary number
+ * @param binary2 - second binary number
+ * @return pointer to binary answer
+ * */
+int* subtractBinaryNumbers(int* binary1, int* binary2)
+{
+    int* result = (int*)malloc(sizeof(int)*8);
+    for(int i=0; i<8; i++)
+    {
+        result[i] = binary1[i] - binary2[i];
+        if (result[i] < 0) result[i] = 1;
+
+    }
+    
+    return result;
 }
   
 /*Initialises  Store to its default values 0 

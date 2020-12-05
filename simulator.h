@@ -24,24 +24,27 @@ void runSimulator();
 /*Fetches instructions from the store*/
 int fetch();
 /*Decodes the fetch instruction*/
-void decode();
+int decode();
 /*Transforms backwards binary code to integer*/
 int convertBinaryToInt(int *binaryArray);
 /*Raises number to a power*/
 int raiseToPower(int number, int power);
 /*Executes the instruction, returns -1 if program has ended*/
-int execute();
+int execute(int function);
 /*Displays all relevant data*/
 void display();
 /*Loads the machine code from the Assembler generated file*/
 void loadCode();
-
+/*Subtracts binary numbers from one another.*/
+int* subtractBinaryNumbers(int* binary1, int* binary2);
 /*Initialises Store*/
 int initialiseStore();
 /*Fills Store with given program code*/
 int fillStore(char fileName[]);
 /*Displays Store*/
 void displayStore();
+
+void displayStoreAtLine();
 /*Deletes Store*/
 int freeStore();
 /*Resets Store to its default values*/
