@@ -473,7 +473,7 @@ void divide(int divisor)
     *tempArray=*subtractBinaryNumbers(accumulator, store[lineNumber]);
     for(int i=0;i<divisor;i++)
     {
-        if(!compareBinaryNumbers(tempArray,accumulator)) break;
+        if(!compareBinaryNumbers(tempArray,store[lineNumber])) break;
         *tempArray = *subtractBinaryNumbers(tempArray, store[lineNumber]);
         result++;
     }
