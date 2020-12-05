@@ -50,5 +50,8 @@ void resetStore(int row);
 void displayAccumulator();
 /*Displays the contents of the present instruction*/
 void displayPresentInstruction();
+/*Converts a binary expression to its negative value*/
+int *negOperand(int *array);
+
 
 #endif
