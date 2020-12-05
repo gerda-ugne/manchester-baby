@@ -65,6 +65,7 @@ int allocateMemory()
  * */
 void freeMemory()
 {
+    free(negOperand(store[lineNumber]));
     free(accumulator);
     free(presentInstruction);
     free(fetchedInstruction);
@@ -162,7 +163,8 @@ int execute()
 			return SUCCESS;
 		// Load the number from store[lineNumber] to accumulator
 		case 2: //LDN
-			memcpy(accumulator, store[lineNumber], bits*sizeof(int));
+			//memcpy(accumulator, store[lineNumber], bits*sizeof(int));
+            memcpy(accumulator, negOperand(store[lineNumber]), bits*sizeof(int));
 			return SUCCESS;
 		// Stores number in accumulator to store[lineNumber]
 		case 3: //STO
@@ -338,3 +340,51 @@ void resetStore(int row)
         }
     }
 }
+
+/*Negates the binary expression while using a 2's complement format
+@param array - a pointer to an array which binary expression is being negated 
+@return negArray - a pointer to an array with a negated binary expression
+*/
+int *negOperand(int *array)
+{
+    int add=1;
+    int tempArray[bits];
+    int *negArray=(int*)malloc(sizeof(int) * bits);
+
+    for(int i=0; i < bits; i++)
+    {
+        if(array[i]==0)
+            tempArray[i] = 1;
+        else
+            tempArray[i] = 0;
+    }
+
+    /*The principle of an algorithm - adding 1 to a toggled binary number, was based on an example from a resource cited below: 
+    *
+    * Title: What is the 2s complement in C?
+    * Author:javatpoint.com 
+    * Date: not stated 
+    * Availability: https://www.javatpoint.com/2s-complement-in-c#:~:text=In%20short%2C%20we%20can%20say,Therefore%2C%20one's%20complement%20becomes%2011101011.
+    * 
+    * I alterred variable names and loop condition.
+    */
+    for(int i=0; i < bits; i++)
+    {
+        //inspecting whether the byte is 1 and  there is an extra value of 1 to be added
+        if(tempArray[i]==1 && add == 1)
+            negArray[i] = 0;
+        //if the slot of that binary digit is 0 and there is a plus 1 needs to be added 
+         else if(tempArray[i] == 0 && add==1)
+        {
+            negArray[i]=1;
+            add=0;
+        }
+        else
+            negArray[i] = tempArray[i];
+    }
+    /*
+    * End of code extract. 
+    */
+    return negArray;
+}
+
