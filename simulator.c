@@ -470,7 +470,7 @@ void divide(int divisor)
 {
     int result =0;
     int *tempArray = (int*)calloc(bits, sizeof(int));
-    *tempArray=*subtractBinaryNumbers(accumulator, store[lineNumber]);
+    memcpy(tempArray, accumulator, bits*sizeof(int));
     for(int i=0;i<divisor;i++)
     {
         if(!compareBinaryNumbers(tempArray,store[lineNumber])) break;
