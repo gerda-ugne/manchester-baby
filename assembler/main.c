@@ -5,5 +5,13 @@
 
 int main()
 {
+	char readLines[256][256];
+
+	loadCode(readLines);
+
+	initialiseInstructionSet();
+
+	firstPass(readLines);
+	
     return 0;
 }
