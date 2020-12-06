@@ -503,13 +503,5 @@ int* intToBinary(int number)
         number=number/2;
         length++;
     }
-    //Turns the binary number around
-    for(int j=0;j<length/2;j++)
-    {
-        int temp = result[j];
-        result[j]=result[length-1];
-        result[length-1]=temp;
-        length--;
-    }
     return result;
 }
