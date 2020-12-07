@@ -233,8 +233,11 @@ int* subtractBinaryNumbers(int* binary1, int* binary2)
         if (result[i] < 0) result[i] = 1;
 
     }
-    
+
+
     return result;
+    
+
 }
 
 /**

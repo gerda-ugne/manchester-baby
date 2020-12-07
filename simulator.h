@@ -49,7 +49,7 @@ int initialiseStore();
 int fillStore(char fileName[]);
 /*Displays Store*/
 void displayStore();
-
+/*Displays store value at provided line number*/
 void displayStoreAtLine();
 /*Deletes Store*/
 int freeStore();
