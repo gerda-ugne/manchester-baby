@@ -45,16 +45,21 @@ void runSimulator()
 
         printf("Accumulator: ");
         displayAccumulator();
+        printf("\nStore:\n");
+        displayStore();
     }
     
 }
 
 void displayStoreAtLine()
 {
+     printf("\033[0;32m"); //The start of coloring the output in green
     for(int i=0; i<bits; i++)
     {
-        printf("%d ", store[lineNumber][i]);
+        if( store[lineNumber][i] == 0) printf(". " ) ;
+        else printf("~ ");
     }
+    printf("\033[0m"); //The end of coloring the output
 }
 /**
  * Increments the control instruction by 1.
@@ -183,6 +188,7 @@ int execute(int function)
 		case 2: //LDN
 			//memcpy(accumulator, store[lineNumber], bits*sizeof(int));
             memcpy(accumulator, negOperand(store[lineNumber]), bits*sizeof(int));
+			printf("OUTPUT: %d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		// Stores number in accumulator to store[lineNumber]
 		case 3: //STO
@@ -190,11 +196,15 @@ int execute(int function)
 			return SUCCESS;
 		// Subtracts number at store[lineNumber] from accumulator
 		case 4: //SUB
-			*accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
+            printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
+		    *accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
+		    printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
+            printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
 			*accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));			
 			return SUCCESS;
 		// If accumulator contains a negative value, skip next instruction
 		case 6: //CMP
@@ -339,15 +349,20 @@ int fillStore(char fileName[] )
 /*Displays current state of a memory - Store*/
 void displayStore()
 {
+    printf("\033[0;32m"); //The start of coloring the output in green 
     for(int i =0; i<bits; i++)
     {
+        printf("\t");
+
         for(int j=0; j<bits; j++)
         {
-            printf("%d ", store[i][j] ) ;
+            if(store[i][j] == 0) printf(". " ) ;
+            else printf("~ ");
+            
         }
         printf("\n");
     }
-
+    printf("\033[0m"); // The end of coloring
     printf("\n");
 }
 
@@ -356,11 +371,13 @@ void displayStore()
  * */
 void displayAccumulator()
 {
+    printf("\033[0;33m"); //The start of coloring the output in yellow 
     for(int i=0; i<bits; i++)
     {
-        printf("%d ", accumulator[i]);
+        if( accumulator[i] == 0) printf(". " ) ;
+            else printf("~ ");
     }
-
+    printf("\033[0m"); // The end of coloring
     printf("\n");
 }
 
@@ -369,11 +386,13 @@ void displayAccumulator()
  * */
 void displayPresentInstruction()
 {
+    printf("\033[0;33m"); //The start of coloring the output in yellow
     for(int i=0; i<bits; i++)
     {
-        printf("%d ", presentInstruction[i]);
+        if( presentInstruction[i] == 0) printf(". " ) ;
+            else printf("~ ");
     }
-
+    printf("\033[0m");
     printf("\n");
 }
 
