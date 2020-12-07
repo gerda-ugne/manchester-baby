@@ -37,6 +37,12 @@ void display();
 void loadCode();
 /*Subtracts binary numbers from one another.*/
 int* subtractBinaryNumbers(int* binary1, int* binary2);
+/*Adds two binary numbers.*/
+int* addBinaryNumbers(int* binary1, int* binary2);
+/*Turns integer into an array containing a binary number*/
+int* intToBinary(int number);
+/*Compares two binary numbers*/
+int compareBinaryNumbers(int* binary1, int* binary2);
 /*Initialises Store*/
 int initialiseStore();
 /*Fills Store with given program code*/
@@ -55,6 +61,10 @@ void displayAccumulator();
 void displayPresentInstruction();
 /*Converts a binary expression to its negative value*/
 int *negOperand(int *array);
+/*A function to multiply the number stored in accumulator*/
+void multiply(int multiplier);
+/*A function to divide the number stored in accumulator**/
+void divide(int divisor);
 
 
 #endif

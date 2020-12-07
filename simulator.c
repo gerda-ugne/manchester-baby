@@ -226,6 +226,33 @@ int* subtractBinaryNumbers(int* binary1, int* binary2)
     
     return result;
 }
+
+/**
+ * Adds two binary numbers.
+ * @param binary1 - first binary number
+ * @param binary2 - second binary number
+ * @return pointer to binary answer
+ * */
+int* addBinaryNumbers(int* binary1, int* binary2)
+{
+    int* result = (int*)malloc(sizeof(int)*8);
+    for(int i=0; i<8; i++)
+    {
+        result[i] = binary1[i] + binary2[i] + result[i];
+        if (result[i] == 2) 
+            {
+                result[i] = 0;
+                result[i+1] = 1;
+            }
+        else if (result[i]==3)
+        {
+            result[i] = 1;
+            result[i+1] = 1;
+        }
+    }
+    
+    return result;
+}
   
 /*Initialises  Store to its default values 0 
 @return SUCCESS if initialization was successful otherwise MEMORY_ALLOCATION_ERROR was detected
@@ -425,3 +452,56 @@ int *negOperand(int *array)
     return negArray;
 }
 
+/*A function to multiply the number stored in accumulator by a times integer.
+*@param times - the multiplier
+*/
+void multiply(int times)
+{
+    for(int i=0;i<times-1;i++)
+    {
+        *accumulator=*addBinaryNumbers(accumulator, store[lineNumber]);
+    }
+}
+
+/*A function to divide the number stored in accumulator by a divisor.
+*@param divisor - the number to divide by
+*/
+void divide(int divisor)
+{
+    int result =0;
+    int *tempArray = (int*)calloc(bits, sizeof(int));
+    memcpy(tempArray, accumulator, bits*sizeof(int));
+    for(int i=0;i<divisor;i++)
+    {
+        if(!compareBinaryNumbers(tempArray,store[lineNumber])) break;
+        *tempArray = *subtractBinaryNumbers(tempArray, store[lineNumber]);
+        result++;
+    }
+    *accumulator=*intToBinary(result);
+    free(tempArray);
+}
+
+/*Checks if binary1 is bigger than or equal to binary2, returns 1 if it is bigger and 0 otherwise*/
+int compareBinaryNumbers(int* binary1, int* binary2)
+{
+    if(convertBinaryToInt(binary1)>=convertBinaryToInt(binary2)) return 1;
+    return 0;
+}
+
+/*Converts integer to a binary number
+*@param number - integer to convert
+*@return an array containing the binary number
+*/
+int* intToBinary(int number)
+{
+    int* result = (int*)calloc(bits, sizeof(int));
+    int length=0;
+    //Calculates a regular binary number from the given integer
+    for(int i=0; number>0;i++)
+    {
+        result[i]=number%2;
+        number=number/2;
+        length++;
+    }
+    return result;
+}
