@@ -205,7 +205,7 @@ int execute(int function)
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
-            printf("Arithmetic Operaration: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
+            printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
 			*accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));			
             return SUCCESS;
