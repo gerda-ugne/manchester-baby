@@ -217,6 +217,14 @@ int execute(int function)
 int* subtractBinaryNumbers(int* binary1, int* binary2)
 {
     int* result = (int*)malloc(sizeof(int)*8);
+    for(int i=0; i<8; i++)
+    {
+        result[i] = binary1[i] - binary2[i];
+        if (result[i] < 0) result[i] = 1;
+
+    }
+
+
     return result;
     
 
