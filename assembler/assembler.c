@@ -44,8 +44,8 @@ void initialiseInstructionSet()
 	strcpy(instructions[7].stringInstruction, "STP");
 	strcpy(instructions[7].binaryInstruction, "111");
 
-	strcpy(instructions[7].stringInstruction, "VAR");
-	strcpy(instructions[7].binaryInstruction, "000");
+	strcpy(instructions[8].stringInstruction, "VAR");
+	strcpy(instructions[8].binaryInstruction, "   ");
 
 	for(int i = 0; i < 9; i++)
 	{
@@ -53,57 +53,129 @@ void initialiseInstructionSet()
 	}
 }
 
-void firstPass(char lines[][256])
+/*
+* The first pass of the assembler through the code.
+* This will parse the code, store the opcodes and
+* operands in the output buffer, and create a symbol
+* table
+* The passed array holds the lines of code
+*/
+void firstPass(char lines[256][256])
 {
+	//i is the iterator for the lines of the
+	//code that have been passed
 	int i = 0;
 
+	//the following will loop until the end of
+	//line character is the first character in
+	//a line
 	while(lines[i][0] != '\0')
 	{
+		/*
+		* The delimiter is comprised of several elements.
+
+		* It will be either:
+		* - a space
+		* - a new line
+		* - a return command
+		* - a tab
+		*/
 		char delimiter[] = " \n\t\r";
+
+		//j will be the iterator for the split string
+		//array
 		int j = 0;
+
+		//pointer to store the parts of the split
+		//string
 		char *str;
+
+		/*
+		* The split parts will be stored as follows:
+		* 
+		* split[0] - Label
+		* split[1] - Opcode
+		* split[2] - Operand
+		*/
 		char *split[3];
+
+		//if the line starts with a ;, that indicates
+		//the line is a comment, so we can skip over
+		//this line
 		if(lines[i][0] != ';')
 		{
+			//split the line about the delimiter
 			str = strtok(lines[i], delimiter);
 
+			//store the first result to the array
 			split[j] = str;
 
+			//loop through all of the instruction set
 			for(int k = 0; k < 9; k++)
 			{
+				//if the first string matches any of the instruction
+				//set, it must be an opcode
 				if(strcmp(split[j], instructions[k].stringInstruction) == 0)
 				{
+					//clear the first slot
 					split[j] = NULL;
+					//store the opcode in the second slot
 					split[1] = str;
+					//set the counter so that the next slot
+					//will be 2
 					j = 1;
 					break;
 				}
 			}
 
+			//increment iterator
 			j++;
 
-			while(str != NULL)
+			//while the split array is not full
+			while(j < 3)
 			{
+				//continue splitting the line about the delimiter
 				str = strtok(NULL, delimiter);
-				split[j] = str;
+
+				//if the split string is not a ;
+				if(strcmp(str, ";") != 0)
+				{
+					//store the string in the array
+					split[j] = str;
+				}
+				//otherwise
+				else
+				{
+					//set the array location to NULL
+					split[j] = NULL;
+				}
+				
+				//increment iterator
 				j++;
 			}
 
 		}
 		else
 		{
+			//since the comment line can be ignored
+			//fill the current split line with NULL
+			//pointers
 			for(int k = 0; k < 3; k++)
 			{
 				split[k] = NULL;
 			}
 		}
 
+		//move to next line of code
+		i++;
+
+		/*
+		* DEBUG CODE: Print the values in the array
+		*/
 		for(int k = 0; k < 3; k++)
 		{
 			printf("%d: %s\n", k, split[k]);
 		}
-
-		i++;
 
 	}
 }
@@ -165,7 +237,7 @@ const char* convertToBE(int number)
 * The function is passed an array where the lines
 * from the file will be stored.
 */
-void loadCode(char lines[][256])
+void loadCode(char lines[256][256])
 {
 	FILE *code;
 
