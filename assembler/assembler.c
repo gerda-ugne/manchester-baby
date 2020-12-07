@@ -109,35 +109,50 @@ void firstPass(char lines[][256])
 }
 
 /*
-/ Convert passed number into binary 
+/ Convert passed number into big endian binary 
 / and store it in the passed array
 */
 const char* convertToBE(int number)
 {
-	/*
-	/ binary calculations worked out by
-	/ checking if deducting each of the
-	/ binary columns will result in a
-	/ number above 0. If so, this number
-	/ will be a 1 in the binary 
-	/ representation otherwise, it will be a 0
-	*/
+	//array to be filled with the big endian
+	//number and then returned
 	static char converted[14];
 
+	//the final character will always be the
+	//string end character '\0'
 	converted[13] = '\0';
+
+	//the highest binary column will always be 
+	//4096 as there are only 12 possible digits
+	//for the binary number to be stored in
 	int binCol = 4096;
+
+	//loop down through the array until the number
+	//becomes 0
 	for(int i = 12; number > 0; i--)
 	{
+		//store the result of the passed number
+		//minus the current binary column
 		int result = number - binCol;
+
+		//if the result is a number greater than or 
+		//equal to 0, the number must fit into that
+		//column and should be represented with a 1
 		if(result >= 0)
 		{
 			converted[i] = '1';
+			//since the calculation worked and was in range,
+			//subtract the column from the passed number
 			number -= binCol;
 		}
+		//otherwise, the number should be represented
+		//with a 0
 		else
 		{
 			converted[i] = '0';
 		}
+		//move to the next binary column by halving
+		//the number
 		binCol /= 2;
 	}	
 
@@ -145,6 +160,11 @@ const char* convertToBE(int number)
 
 }
 
+/*
+* Function to load in the code from a text file.
+* The function is passed an array where the lines
+* from the file will be stored.
+*/
 void loadCode(char lines[][256])
 {
 	FILE *code;
