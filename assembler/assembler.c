@@ -18,6 +18,15 @@ int symbolTable[8];
 /*Loads and runs object code*/
 int loader;
 
+/*
+* Initialises the instruction set
+*
+* 0 - 7 are opcodes
+* 8 is a variable
+* 
+* stringInstruction[0] would hold the opcode as a string
+* binaryInstruction[0] would hold the opcode as big endian binary
+*/
 void initialiseInstructionSet()
 {
 	strcpy(instructions[0].stringInstruction, "JMP");
@@ -47,6 +56,9 @@ void initialiseInstructionSet()
 	strcpy(instructions[8].stringInstruction, "VAR");
 	strcpy(instructions[8].binaryInstruction, "   ");
 
+	/*
+	* DEBUG CODE: Prints all the opcodes and binary equivalents
+	*/
 	for(int i = 0; i < 9; i++)
 	{
 		printf("%s : %s\n", instructions[i].stringInstruction, instructions[i].binaryInstruction);
