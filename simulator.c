@@ -226,47 +226,26 @@ int execute(int function)
  * */
 int* subtractBinaryNumbers(int* binary1, int* binary2)
 {
-    int* result = (int*)malloc(sizeof(int)*8);
-    for(int i=0; i<8; i++)
+    int* result = (int*)malloc(sizeof(int)*bits);
+    int* negatedBinary1 = negOperand(binary1);
+    int* negatedBinary2 = negOperand(binary2);
+    for(int i=0; i<bits; i++)
     {
-        result[i] = binary1[i] - binary2[i];
-        if (result[i] < 0) result[i] = 1;
-
-    }
-
-
-    return result;
-    
-
-}
-
-/**
- * Adds two binary numbers.
- * @param binary1 - first binary number
- * @param binary2 - second binary number
- * @return pointer to binary answer
- * */
-int* addBinaryNumbers(int* binary1, int* binary2)
-{
-    int* result = (int*)malloc(sizeof(int)*8);
-    for(int i=0; i<8; i++)
-    {
-        result[i] = binary1[i] + binary2[i] + result[i];
+        result[i] = negatedBinary1[i] + negatedBinary2[i] + result[i];
         if (result[i] == 2) 
-            {
-                result[i] = 0;
-                result[i+1] = 1;
-            }
+        {
+            result[i] = 0;
+            result[i+1] = 1;
+        }
         else if (result[i]==3)
         {
             result[i] = 1;
             result[i+1] = 1;
         }
     }
-    
-    return result;
+    return negOperand(result);
 }
-  
+
 /*Initialises  Store to its default values 0 
 @return SUCCESS if initialization was successful otherwise MEMORY_ALLOCATION_ERROR was detected
 */
@@ -481,7 +460,7 @@ void multiply(int times)
 {
     for(int i=0;i<times-1;i++)
     {
-        *accumulator=*addBinaryNumbers(accumulator, store[lineNumber]);
+        *accumulator=*subtractBinaryNumbers(accumulator, accumulator);
     }
 }
 
