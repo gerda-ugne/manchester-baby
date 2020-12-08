@@ -37,8 +37,6 @@ void display();
 void loadCode();
 /*Subtracts binary numbers from one another.*/
 int* subtractBinaryNumbers(int* binary1, int* binary2);
-/*Adds two binary numbers.*/
-int* addBinaryNumbers(int* binary1, int* binary2);
 /*Turns integer into an array containing a binary number*/
 int* intToBinary(int number);
 /*Compares two binary numbers*/
