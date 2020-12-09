@@ -5,6 +5,10 @@
 
 int main()
 {
+
+	createBuffer();
+	createSymbolTable();
+
 	char readLines[256][256];
 
 	loadCode(readLines);
@@ -13,5 +17,7 @@ int main()
 
 	firstPass(readLines);
 	
+	clearSymbolTable();
+	clearBuffer();
     return 0;
 }
