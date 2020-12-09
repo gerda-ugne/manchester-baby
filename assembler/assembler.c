@@ -1,22 +1,90 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "assembler.h"
 
-
-typedef struct instructionSet{
-
-char stringInstruction[4];
-char binaryInstruction[4];
-
+typedef struct instructionSet
+{
+	char stringInstruction[4];
+	char binaryInstruction[4];
 } InstructionSet;
+
+typedef struct symbolTable
+{
+	char label[14];
+	char address[14];
+} SymbolTable;
 
 /**/
 InstructionSet instructions[9];
 int codeBuffer[8];
 /*Stores memory adresses of user's labels and variables*/
-int symbolTable[8];
+SymbolTable symbols[8];
 /*Loads and runs object code*/
 int loader;
+
+LinkedList *buffer;
+
+void createBuffer()
+{
+	buffer = (LinkedList*)malloc(sizeof(LinkedList));
+
+	buffer->head = NULL;
+	buffer->tail = NULL;
+}
+
+void clearBuffer()
+{
+	//while there are patients in the queue
+	while(buffer->head != NULL)
+	{
+		//create a pointer to the head of the queue
+		ListNode *temp = buffer->head;
+
+		//set the head to the following patient
+		buffer->head = buffer->head->next;
+
+		//free the memory location of the last patient
+		free(temp);
+	}
+
+	//set the tail of the queue to nothing
+	buffer->tail = NULL;
+
+	//free the memory location of the queue
+	free(buffer);
+}
+
+void addToBuffer(char toAdd[])
+{
+	ListNode *newNode = (ListNode*)malloc(sizeof(ListNode));
+
+	strcpy(newNode->binary, toAdd);
+	newNode->next = NULL;
+
+	if(buffer->tail == NULL)
+	{
+		buffer->tail = newNode;
+		buffer->head = newNode;
+	}
+	else
+	{
+		buffer->tail->next = newNode;
+		buffer->tail = newNode;
+	}
+}
+
+void printBuffer()
+{
+	ListNode *pNext = buffer->head;
+
+	while(pNext != NULL)
+	{
+		printf("%s\n", pNext->binary);
+		pNext = pNext->next;
+	}
+}
 
 /*
 * Initialises the instruction set
@@ -77,6 +145,8 @@ void firstPass(char lines[256][256])
 	//i is the iterator for the lines of the
 	//code that have been passed
 	int i = 0;
+
+	createBuffer();
 
 	//the following will loop until the end of
 	//line character is the first character in
@@ -166,6 +236,47 @@ void firstPass(char lines[256][256])
 				j++;
 			}
 
+			if(split[1] != NULL)
+			{
+
+				for(int k = 0; k < 9; k++)
+				{
+					if(strcmp(split[1], instructions[k].stringInstruction) == 0)
+					{
+						if(k != 8)
+						{
+							if(k != 5)
+							{
+								addToBuffer(instructions[k].binaryInstruction);
+							}
+						}
+					}
+				}
+
+				if(split[2] != NULL)
+				{
+
+					if(isdigit(split[2][0]) == 0)
+					{
+						addToBuffer("");
+					}
+					else
+					{
+						if(strcmp(split[1], "VAR") == 0)
+						{
+							//add to symbol table
+						}
+						else
+						{
+							char converted = *convertToBE(atoi(split[2]));
+							addToBuffer(&converted);
+						}
+					}
+
+				}
+
+			}
+
 		}
 		else
 		{
@@ -190,13 +301,17 @@ void firstPass(char lines[256][256])
 		}
 
 	}
+
+	printBuffer();
+
+	clearBuffer();
 }
 
 /*
 / Convert passed number into big endian binary 
 / and store it in the passed array
 */
-const char* convertToBE(int number)
+char* convertToBE(int number)
 {
 	//array to be filled with the big endian
 	//number and then returned
