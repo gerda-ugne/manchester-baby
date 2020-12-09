@@ -147,17 +147,18 @@ void printBuffer()
 void printSymbolTable()
 {
 	TableNode* current = symbolTable->head;
+	if(symbolTable->head == NULL) printf("Table is empty.\n");
 
 	//loop until there is no next node
 	while(current != NULL)
 	{
 		//print the current node
-		printf("%s\n", current->label);
+		printf("LABEL: %s, VALUE: %s\n", current->label, current->value);
 		//move to the next node
 		current = current->next;
 	}
+
 	printf("\n");
-	free(current);
 }
 
 /*
@@ -200,11 +201,11 @@ void initialiseInstructionSet()
 
 	/*
 	* DEBUG CODE: Prints all the opcodes and binary equivalents
-	*/
+	
 	for(int i = 0; i < 9; i++)
 	{
 		printf("%s : %s\n", instructions[i].stringInstruction, instructions[i].binaryInstruction);
-	}
+	}*/
 }
 
 /*
@@ -356,24 +357,30 @@ void firstPass(char lines[256][256])
 							//TODO: add to symbol table
 
 							//check if the variable is already in the symbol table
-							printf(" RETURNED VALUE: %d \n",checkIfInSymbolTable(split[1]));
-							if(checkIfInSymbolTable(split[1]) == 0)
-							{
-								//If label not found, add it to the table
-								addToTable(split[1]);
-								// Need to assign the value to the label - where to look?
-								//assignValueToLabel();
-							}
+							if(split[0] != NULL)
+							{	
 							
-							printf("SYMBOL TABLE\n");
-							printSymbolTable();
+								if(checkIfInSymbolTable(split[0]) == 0)
+								{
+								//If label not found, add it to the table
+								addToTable(split[0]);
+								}
+								else
+								{
+									// Need to assign the value to the label - where to look?
+									assignValueToLabel(split[0],split[2]);
+								}
+								
+							
+								printf("SYMBOL TABLE\n");
+								printSymbolTable();
+
+							}
 
 						}
 						//otherwise
 						else
 						{
-
-							
 							//convert the operand to big endian binary
 							char converted = *convertToBE(atoi(split[2]));
 							//store the operand in the buffer
@@ -552,7 +559,6 @@ int addToTable(char* label)
 		}
 
 		current->next = toAdd;
-		free(current);
 
 		return SUCCESS;
 	}
@@ -567,7 +573,7 @@ int addToTable(char* label)
  * @param value - value to be assigned
  * @return SUCCESS if value changed, INVALID_INPUT_PARAMETER if label doesn't exist.
  * */
-int assignValueToLabel(char* label, int value)
+int assignValueToLabel(char* label, char* value)
 {
 	TableNode* current = symbolTable->head;
 
@@ -577,7 +583,7 @@ int assignValueToLabel(char* label, int value)
 		if(strcmp(current->label,label) == 0)
 		{
 			//Adjust the value of the entry
-			current->value = value;
+			strcpy(current->value, value);
 			return SUCCESS;
 		}
 
