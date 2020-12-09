@@ -95,13 +95,20 @@ void addToBuffer(char toAdd[])
 	}
 }
 
+/*
+* Prints the buffer to the terminal
+*/
 void printBuffer()
 {
+	//start at the head of the buffer
 	ListNode *pNext = buffer->head;
 
+	//loop until there is no next node
 	while(pNext != NULL)
 	{
+		//print the current node
 		printf("%s\n", pNext->binary);
+		//move to the next node
 		pNext = pNext->next;
 	}
 }
