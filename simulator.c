@@ -51,6 +51,7 @@ void runSimulator()
     
 }
 
+/*Displays content of a store at a chosen line*/
 void displayStoreAtLine()
 {
      printf("\033[0;32m"); //The start of coloring the output in green
@@ -61,6 +62,7 @@ void displayStoreAtLine()
     }
     printf("\033[0m"); //The end of coloring the output
 }
+
 /**
  * Increments the control instruction by 1.
  * */
@@ -172,7 +174,10 @@ int raiseToPower(int number, int power)
 	return result;
 }
 
-/*Executes the decoded instruction, returns -1 if program has ended, or SUCCESS if instruction successfully executed*/
+/*Executes the decoded instruction, returns -1 if program has ended, or SUCCESS if instruction successfully executed
+* param function - instructions
+* return SUCCESS if the instruction was processed 
+*/
 int execute(int function)
 {
 	switch(function) {
@@ -197,13 +202,13 @@ int execute(int function)
 		// Subtracts number at store[lineNumber] from accumulator
 		case 4: //SUB
             printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
-		    *accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
+		    accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
 		    printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
-            printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
-			*accumulator=*subtractBinaryNumbers(accumulator, store[lineNumber]);
+            printf("Arithmetic Operation: %d + %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
+			accumulator=subtractBinaryNumbers(accumulator, store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));			
 			return SUCCESS;
 		// If accumulator contains a negative value, skip next instruction
@@ -216,6 +221,33 @@ int execute(int function)
 	}
 
     return -1;
+}
+
+/**
+ * Sums two binary numbers.
+ * @param binary1 - first binary number
+ * @param binary2 - second binary number
+ * @return pointer to binary answer
+ * */
+int* sumBinaryNumbers(int* binary1, int* binary2)
+{
+    int* result = (int*)malloc(sizeof(int)*bits);
+    int* negatedBinary2 = negOperand(binary2);
+    for(int i=0; i<bits; i++)
+    {
+        result[i] = binary1[i] + negatedBinary2[i] + result[i];
+        if (result[i] == 2) 
+        {
+            result[i] = 0;
+            result[i+1] = 1;
+        }
+        else if (result[i]==3)
+        {
+            result[i] = 1;
+            result[i+1] = 1;
+        }
+    }
+    return result;
 }
 
 /**
@@ -245,6 +277,8 @@ int* subtractBinaryNumbers(int* binary1, int* binary2)
     }
     return negOperand(result);
 }
+
+
 
 /*Initialises  Store to its default values 0 
 @return SUCCESS if initialization was successful otherwise MEMORY_ALLOCATION_ERROR was detected
@@ -429,8 +463,8 @@ int *negOperand(int *array)
     * Title: What is the 2s complement in C?
     * Author:javatpoint.com 
     * Date: not stated 
-    * Availability: https://www.javatpoint.com/2s-complement-in-c#:~:text=In%20short%2C%20we%20can%20say,Therefore%2C%20one's%20complement%20becomes%2011101011.
-    * 
+    * Availability: https://www.javatpoint.com/2s-complement-in-c
+    *
     * I alterred variable names and loop condition.
     */
     for(int i=0; i < bits; i++)
