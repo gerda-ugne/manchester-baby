@@ -64,20 +64,32 @@ void clearBuffer()
 	free(buffer);
 }
 
+/*
+* Add a new node to the buffer
+*/
 void addToBuffer(char toAdd[])
 {
+	//assign the memory for the new node in the buffer
 	ListNode *newNode = (ListNode*)malloc(sizeof(ListNode));
 
+	//copy the value to be added to the new node
 	strcpy(newNode->binary, toAdd);
+	//set the next node to null
 	newNode->next = NULL;
 
+	//if there is no tail of the buffer
+	//assume it's empty
 	if(buffer->tail == NULL)
 	{
+		//set the new node to both the head and
+		//tail of the buffer
 		buffer->tail = newNode;
 		buffer->head = newNode;
 	}
+	//otherwise
 	else
 	{
+		//add the new node to the tail of the buffer
 		buffer->tail->next = newNode;
 		buffer->tail = newNode;
 	}
