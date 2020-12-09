@@ -217,7 +217,7 @@ void initialiseInstructionSet()
 */
 void firstPass(char lines[256][256])
 {
-	//i is the iterator for the lines of the
+	//Line number is the iterator for the lines of the
 	//code that have been passed
 	int lineNumber = 0;
 

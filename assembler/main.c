@@ -17,5 +17,7 @@ int main()
 
 	firstPass(readLines);
 	
+	clearSymbolTable();
+	clearBuffer();
     return 0;
 }
