@@ -26,10 +26,15 @@ int loader;
 
 LinkedList *buffer;
 
+/*
+* Creates a new code output buffer
+*/
 void createBuffer()
 {
+	//assign memory space to store the buffer
 	buffer = (LinkedList*)malloc(sizeof(LinkedList));
 
+	//initialise the fields to NULL
 	buffer->head = NULL;
 	buffer->tail = NULL;
 }
