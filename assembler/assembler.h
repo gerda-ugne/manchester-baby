@@ -32,7 +32,7 @@ typedef struct linkedList
 typedef struct tableNode {
 
     char label[50];
-    char value[50];
+    int value;
 	struct tableNode* next;
 
 } TableNode;
@@ -55,6 +55,6 @@ char* convertToBE(int number);
 void firstPass(char lines[256][256]);
 void initialiseInstructionSet();
 int loadCode(char lines[256][256]);
-int assignValueToLabel(char* label, char* value);
+int assignValueToLabel(char* label, int value);
 
 #endif

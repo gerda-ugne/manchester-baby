@@ -153,7 +153,7 @@ void printSymbolTable()
 	while(current != NULL)
 	{
 		//print the current node
-		printf("LABEL: %s, VALUE: %s\n", current->label, current->value);
+		printf("LABEL: %s, VALUE: %d\n", current->label, current->value);
 		//move to the next node
 		current = current->next;
 	}
@@ -219,12 +219,12 @@ void firstPass(char lines[256][256])
 {
 	//i is the iterator for the lines of the
 	//code that have been passed
-	int i = 0;
+	int lineNumber = 0;
 
 	//the following will loop until the end of
 	//line character is the first character in
 	//a line
-	while(lines[i][0] != '\0')
+	while(lines[lineNumber][0] != '\0')
 	{
 		/*
 		* The delimiter is comprised of several elements.
@@ -257,10 +257,10 @@ void firstPass(char lines[256][256])
 		//if the line starts with a ;, that indicates
 		//the line is a comment, so we can skip over
 		//this line
-		if(lines[i][0] != ';')
+		if(lines[lineNumber][0] != ';')
 		{
 			//split the line about the delimiter
-			str = strtok(lines[i], delimiter);
+			str = strtok(lines[lineNumber], delimiter);
 
 			//store the first result to the array
 			split[j] = str;
@@ -344,8 +344,7 @@ void firstPass(char lines[256][256])
 					{
 						//leave a blank space in the buffer for
 						//the variable
-						addToBuffer("");
-						
+						addToBuffer("");				
 
 					}
 					//otherwise
@@ -364,13 +363,10 @@ void firstPass(char lines[256][256])
 								{
 								//If label not found, add it to the table
 								addToTable(split[0]);
+								int intValue=atoi(split[2]);
+								printf("Converted integer: %d \n", intValue);
+								assignValueToLabel(split[0],intValue);
 								}
-								else
-								{
-									// Need to assign the value to the label - where to look?
-									assignValueToLabel(split[0],split[2]);
-								}
-								
 							
 								printf("SYMBOL TABLE\n");
 								printSymbolTable();
@@ -405,7 +401,7 @@ void firstPass(char lines[256][256])
 		}
 
 		//move to next line of code
-		i++;
+		lineNumber++;
 
 		/*
 		* DEBUG CODE: Print the values in the array
@@ -423,12 +419,6 @@ void firstPass(char lines[256][256])
 	*/ 
 	printBuffer();
 
-	/*
-	* DEBUG CODE: Clear the memory taken by the list
-	*
-	* NOTE: REMOVE THIS WHEN PASS 2 IS ADDED
-	*/ 
-	clearBuffer();
 }
 
 /*
@@ -520,7 +510,6 @@ int loadCode(char lines[256][256])
 int checkIfInSymbolTable(char* toCheck)
 {
 	TableNode* current = symbolTable->head;
-	printf("LABEL TO LOOK FOR: %s \n", toCheck);
 	while(current!=NULL)
 	{
 		if(strcmp(current->label,toCheck) == 0)
@@ -542,8 +531,6 @@ int addToTable(char* label)
 
 	strcpy(toAdd->label, label);
 	toAdd->next = NULL;
-	printf("LABEL IN THE PARAM: %s \n", label);
-	printf("TO ADD HOLDS VALUE %s \n", toAdd->label);
 
 	if(symbolTable->head == NULL)
 	{
@@ -573,7 +560,7 @@ int addToTable(char* label)
  * @param value - value to be assigned
  * @return SUCCESS if value changed, INVALID_INPUT_PARAMETER if label doesn't exist.
  * */
-int assignValueToLabel(char* label, char* value)
+int assignValueToLabel(char* label, int value)
 {
 	TableNode* current = symbolTable->head;
 
@@ -583,7 +570,7 @@ int assignValueToLabel(char* label, char* value)
 		if(strcmp(current->label,label) == 0)
 		{
 			//Adjust the value of the entry
-			strcpy(current->value, value);
+			current->value = value;
 			return SUCCESS;
 		}
 
