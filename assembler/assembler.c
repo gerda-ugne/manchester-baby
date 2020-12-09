@@ -146,6 +146,7 @@ void firstPass(char lines[256][256])
 	//code that have been passed
 	int i = 0;
 
+	//create output code buffer
 	createBuffer();
 
 	//the following will loop until the end of
@@ -236,39 +237,57 @@ void firstPass(char lines[256][256])
 				j++;
 			}
 
+			//if an opcode is present
 			if(split[1] != NULL)
 			{
 
+				//loop through all the known opcodes
 				for(int k = 0; k < 9; k++)
 				{
+					//if the split opcode matches one of the opcodes
 					if(strcmp(split[1], instructions[k].stringInstruction) == 0)
 					{
+						//the opcode should only be written to
+						//the buffer if it is not "VAR"
 						if(k != 8)
 						{
+							//if the opcode is 5, it is a duplicate of 4
+							//and should be ignored
 							if(k != 5)
 							{
+								//write the binary of the opcode to the buffer
 								addToBuffer(instructions[k].binaryInstruction);
 							}
 						}
 					}
 				}
 
+				//if there is an operand
 				if(split[2] != NULL)
 				{
 
+					//if the operand is not numberic, it must be
+					//an undeclared variable
 					if(isdigit(split[2][0]) == 0)
 					{
+						//leave a blank space in the buffer for
+						//the variable
 						addToBuffer("");
 					}
+					//otherwise
 					else
 					{
+						//if the opcode was a variable
 						if(strcmp(split[1], "VAR") == 0)
 						{
-							//add to symbol table
+							//TODO: add to symbol table
 						}
+						//otherwise
 						else
 						{
+							//convert the operand to big endian binary
 							char converted = *convertToBE(atoi(split[2]));
+							//store the operand in the buffer
 							addToBuffer(&converted);
 						}
 					}
@@ -302,8 +321,16 @@ void firstPass(char lines[256][256])
 
 	}
 
+	/*
+	* DEBUG CODE: Display the buffer
+	*/ 
 	printBuffer();
 
+	/*
+	* DEBUG CODE: Clear the memory taken by the list
+	*
+	* NOTE: REMOVE THIS WHEN PASS 2 IS ADDED
+	*/ 
 	clearBuffer();
 }
 
