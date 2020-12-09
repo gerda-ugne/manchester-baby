@@ -4,39 +4,66 @@
 #include <ctype.h>
 #include "assembler.h"
 
-typedef struct instructionSet
-{
-	char stringInstruction[4];
-	char binaryInstruction[4];
-} InstructionSet;
 
-typedef struct symbolTable
-{
-	char label[14];
-	char address[14];
-} SymbolTable;
-
-/**/
+/*Holds the instruction set for the assembler*/
 InstructionSet instructions[9];
-int codeBuffer[8];
 /*Stores memory adresses of user's labels and variables*/
-SymbolTable symbols[8];
-/*Loads and runs object code*/
-int loader;
-
+Table* symbolTable;
+/*Holds the code output*/
 LinkedList *buffer;
 
-/*
+/**
+ * Allocate memory for the symbol table.
+ * @return MEMORY_ALLOCATION_ERROR is malloc fails,
+ * else return SUCCESS
+ * */
+int createSymbolTable()
+{
+	symbolTable = (Table*)malloc(sizeof(Table));
+	if(symbolTable == NULL) return MEMORY_ALLOCATION_ERROR;
+
+	//initialise the fields to NULL
+	symbolTable->head = NULL;
+	return SUCCESS;
+}
+
+/**
 * Creates a new code output buffer
+* @return MEMORY_ALLOCATION_ERROR is malloc fails,
+* else return SUCCESS
 */
-void createBuffer()
+int createBuffer()
 {
 	//assign memory space to store the buffer
 	buffer = (LinkedList*)malloc(sizeof(LinkedList));
+	if(buffer == NULL) return MEMORY_ALLOCATION_ERROR;
 
 	//initialise the fields to NULL
 	buffer->head = NULL;
 	buffer->tail = NULL;
+
+	return SUCCESS;
+}
+
+/**
+ * Frees the memory for the symbol table.
+ * */
+void clearSymbolTable()
+{
+	//while the buffer is not empty
+	while(symbolTable->head != NULL)
+	{
+		//create a pointer to the head of the buffer
+		TableNode *temp = symbolTable->head;
+
+		//set the head to the following node
+		symbolTable->head = symbolTable->head->next;
+
+		//free the memory location of the last node
+		free(temp);
+	}
+
+	free(symbolTable);
 }
 
 /*
@@ -64,8 +91,9 @@ void clearBuffer()
 	free(buffer);
 }
 
-/*
+/**
 * Add a new node to the buffer
+* @param toAdd - value to be added
 */
 void addToBuffer(char toAdd[])
 {
@@ -111,6 +139,25 @@ void printBuffer()
 		//move to the next node
 		pNext = pNext->next;
 	}
+}
+
+/*
+* Prints the symbol table to the terminal
+*/
+void printSymbolTable()
+{
+	TableNode* current = symbolTable->head;
+
+	//loop until there is no next node
+	while(current != NULL)
+	{
+		//print the current node
+		printf("%s\n", current->label);
+		//move to the next node
+		current = current->next;
+	}
+	printf("\n");
+	free(current);
 }
 
 /*
@@ -172,9 +219,6 @@ void firstPass(char lines[256][256])
 	//i is the iterator for the lines of the
 	//code that have been passed
 	int i = 0;
-
-	//create output code buffer
-	createBuffer();
 
 	//the following will loop until the end of
 	//line character is the first character in
@@ -300,6 +344,7 @@ void firstPass(char lines[256][256])
 						//leave a blank space in the buffer for
 						//the variable
 						addToBuffer("");
+
 					}
 					//otherwise
 					else
@@ -308,6 +353,17 @@ void firstPass(char lines[256][256])
 						if(strcmp(split[1], "VAR") == 0)
 						{
 							//TODO: add to symbol table
+
+							//check if the variable is already in the symbol table
+							if(checkIfInSymbolTable(split[1]) == 0)
+							{
+								//If not found, add it to the table
+								addToTable(split[1]);
+							}
+							
+							printf("SYMBOL TABLE\n");
+							printSymbolTable();
+
 						}
 						//otherwise
 						else
@@ -343,8 +399,9 @@ void firstPass(char lines[256][256])
 		*/
 		for(int k = 0; k < 3; k++)
 		{
-			printf("%d: %s\n", k, split[k]);
+			printf("%d: %s", k, split[k]);
 		}
+		printf("\n");
 
 	}
 
@@ -418,7 +475,7 @@ char* convertToBE(int number)
 * The function is passed an array where the lines
 * from the file will be stored.
 */
-void loadCode(char lines[256][256])
+int loadCode(char lines[256][256])
 {
 	FILE *code;
 
@@ -436,11 +493,63 @@ void loadCode(char lines[256][256])
 		}
 
 		fclose(code);
+		return SUCCESS;
 
+	}
+	else return FILE_IO_ERROR;
+}
+
+/**
+ * Checks if the string is currently in the symbol table.
+ * @param toCheck - label to find
+ * @return 1 if found, 0 if not found
+ * */
+int checkIfInSymbolTable(char* toCheck)
+{
+	TableNode* current = symbolTable->head;
+	while(current!=NULL)
+	{
+		if(strcmp(current->label,toCheck) == 0)
+		{
+			return 1;
+		}
+
+		current = current->next;
+	}
+
+	free(current);
+	return 0;
+}
+
+int addToTable(char* label)
+{
+	TableNode* toAdd = (TableNode*)malloc(sizeof(TableNode));
+	if(toAdd == NULL) return MEMORY_ALLOCATION_ERROR;
+
+	strcpy(toAdd->label, label);
+	toAdd->next = NULL;
+	printf("LABEL IN THE PARAM: %s \n", label);
+	printf("TO ADD HOLDS VALUE %s \n", toAdd->label);
+
+	if(symbolTable->head == NULL)
+	{
+		symbolTable->head = toAdd;
 	}
 	else
 	{
-		//display error to user
-		printf("ERROR: File failed to open\n");
+		//iterate to the end of the list
+		TableNode* current = symbolTable->head;
+		while(current->next!=NULL)
+		{
+			current=current->next;
+		}
+
+		current->next = toAdd;
+		free(current);
+
+		return SUCCESS;
 	}
+
+	return SUCCESS;
+
 }

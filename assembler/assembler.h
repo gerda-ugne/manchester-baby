@@ -9,6 +9,13 @@
 #define INVALID_LIST_OPERATION   103
 #define FILE_IO_ERROR            10
 
+typedef struct instructionSet{
+
+char stringInstruction[4];
+char binaryInstruction[4];
+
+
+} InstructionSet;
 typedef struct listNode
 {
 	char binary[14];
@@ -22,13 +29,31 @@ typedef struct linkedList
 	ListNode *tail;
 } LinkedList;
 
-void createBuffer();
+typedef struct tableNode {
+
+    char label[50];
+    char hexCode[50];
+	struct tableNode* next;
+
+} TableNode;
+
+typedef struct table
+{
+	struct tableNode *head;
+} Table;
+
+int createBuffer();
 void clearBuffer();
+int createSymbolTable();
+void clearSymbolTable();
 void addToBuffer(char toAdd[]);
+int addToTable(char* label);
+int checkIfInSymbolTable(char* toCheck);
 void printBuffer();
+void printSymbolTable();
 char* convertToBE(int number);
 void firstPass(char lines[256][256]);
 void initialiseInstructionSet();
-void loadCode(char lines[256][256]);
+int loadCode(char lines[256][256]);
 
 #endif

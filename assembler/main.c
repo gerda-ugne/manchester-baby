@@ -5,6 +5,10 @@
 
 int main()
 {
+
+	createBuffer();
+	createSymbolTable();
+
 	char readLines[256][256];
 
 	loadCode(readLines);
