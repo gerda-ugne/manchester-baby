@@ -39,25 +39,28 @@ void createBuffer()
 	buffer->tail = NULL;
 }
 
+/*
+* Clear the buffer and free the memory
+*/
 void clearBuffer()
 {
-	//while there are patients in the queue
+	//while the buffer is not empty
 	while(buffer->head != NULL)
 	{
-		//create a pointer to the head of the queue
+		//create a pointer to the head of the buffer
 		ListNode *temp = buffer->head;
 
-		//set the head to the following patient
+		//set the head to the following node
 		buffer->head = buffer->head->next;
 
-		//free the memory location of the last patient
+		//free the memory location of the last node
 		free(temp);
 	}
 
-	//set the tail of the queue to nothing
+	//set the tail of the buffer to nothing
 	buffer->tail = NULL;
 
-	//free the memory location of the queue
+	//free the memory location of the buffer
 	free(buffer);
 }
 
