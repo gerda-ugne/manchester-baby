@@ -344,6 +344,7 @@ void firstPass(char lines[256][256])
 						//leave a blank space in the buffer for
 						//the variable
 						addToBuffer("");
+						
 
 					}
 					//otherwise
@@ -355,10 +356,13 @@ void firstPass(char lines[256][256])
 							//TODO: add to symbol table
 
 							//check if the variable is already in the symbol table
+							printf(" RETURNED VALUE: %d \n",checkIfInSymbolTable(split[1]));
 							if(checkIfInSymbolTable(split[1]) == 0)
 							{
-								//If not found, add it to the table
+								//If label not found, add it to the table
 								addToTable(split[1]);
+								// Need to assign the value to the label - where to look?
+								//assignValueToLabel();
 							}
 							
 							printf("SYMBOL TABLE\n");
@@ -368,6 +372,8 @@ void firstPass(char lines[256][256])
 						//otherwise
 						else
 						{
+
+							
 							//convert the operand to big endian binary
 							char converted = *convertToBE(atoi(split[2]));
 							//store the operand in the buffer
@@ -507,6 +513,7 @@ int loadCode(char lines[256][256])
 int checkIfInSymbolTable(char* toCheck)
 {
 	TableNode* current = symbolTable->head;
+	printf("LABEL TO LOOK FOR: %s \n", toCheck);
 	while(current!=NULL)
 	{
 		if(strcmp(current->label,toCheck) == 0)
@@ -551,5 +558,32 @@ int addToTable(char* label)
 	}
 
 	return SUCCESS;
+
+}
+
+/**
+ * Assigns the value to the found label.
+ * @param label - label to look for
+ * @param value - value to be assigned
+ * @return SUCCESS if value changed, INVALID_INPUT_PARAMETER if label doesn't exist.
+ * */
+int assignValueToLabel(char* label, int value)
+{
+	TableNode* current = symbolTable->head;
+
+	//Iterate through list and find where to insert the value
+	while(current!=NULL)
+	{
+		if(strcmp(current->label,label) == 0)
+		{
+			//Adjust the value of the entry
+			current->value = value;
+			return SUCCESS;
+		}
+
+		current = current->next;
+	}
+	//If label not found
+	return INVALID_INPUT_PARAMETER;
 
 }
