@@ -487,38 +487,57 @@ int *negOperand(int *array)
     return negArray;
 }
 
-/*A function to multiply the number stored in accumulator by a times integer.
-*@param times - the multiplier
+/*A function to multiply the number stored in accumulator by a binary number.
+*@param array - the binary array holding the multiplier
 */
-void multiply(int times)
+void multiply(int *array)
 {
-    for(int i=0;i<times-1;i++)
-    {
-        *accumulator=*subtractBinaryNumbers(accumulator, accumulator);
-    }
-}
+    //converts the binary number to an integer
+    int times = convertBinaryToInt(array);
 
-/*A function to divide the number stored in accumulator by a divisor.
-*@param divisor - the number to divide by
-*/
-void divide(int divisor)
-{
-    int result =0;
+    //copies the current accumulator value to another array
     int *tempArray = (int*)calloc(bits, sizeof(int));
     memcpy(tempArray, accumulator, bits*sizeof(int));
-    for(int i=0;i<divisor;i++)
+
+    //adds the starting value to the accumulator for the given times integer
+    for(int i=0;i<times-1;i++)
     {
-        if(!compareBinaryNumbers(tempArray,store[lineNumber])) break;
-        *tempArray = *subtractBinaryNumbers(tempArray, store[lineNumber]);
+        *accumulator=*sumBinaryNumbers(accumulator, tempArray);
+    }
+
+    //frees temporary array
+    free(tempArray);
+}
+
+/*A function to divide the number stored in accumulator by a binary array holding the divisor.
+*@param array - the binary array to divide by
+*/
+void divide(int* array)
+{
+    //the result variable holds the result of accumulator divided by divisor array
+    int result = 0;
+
+    //copies starting accumulator value to another array
+    int *tempArray = (int*)calloc(bits, sizeof(int));
+    memcpy(tempArray, accumulator, bits*sizeof(int));
+
+    //while the integer value of the temporary array is bigger than or equal to the divisor array...
+    while(compareBinaryNumbers(tempArray,array)){
+        //...subtract the divisor array from the temporary array
+        *tempArray = *subtractBinaryNumbers(tempArray, array);
+        //increment result
         result++;
     }
+    //once the integer value of the temporary array is smaller than the divisor array, copy result to accumulator
     *accumulator=*intToBinary(result);
+    //free temporary array
     free(tempArray);
 }
 
 /*Checks if binary1 is bigger than or equal to binary2, returns 1 if it is bigger and 0 otherwise*/
 int compareBinaryNumbers(int* binary1, int* binary2)
 {
+
     if(convertBinaryToInt(binary1)>=convertBinaryToInt(binary2)) return 1;
     return 0;
 }

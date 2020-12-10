@@ -62,9 +62,9 @@ void displayPresentInstruction();
 /*Converts a binary expression to its negative value*/
 int *negOperand(int *array);
 /*A function to multiply the number stored in accumulator*/
-void multiply(int multiplier);
+void multiply(int *array);
 /*A function to divide the number stored in accumulator**/
-void divide(int divisor);
+void divide(int *array);
 
 
 #endif
