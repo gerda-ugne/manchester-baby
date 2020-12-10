@@ -154,7 +154,8 @@ int convertBinaryToInt(int *binaryArray)
 	int number = 0;
 	for(int i=0; i<bits; i++)
 	{
-		number+=(binaryArray[i]*raiseToPower(2,i));
+        if(i==bits-1) number-=(binaryArray[i]*raiseToPower(2,i));
+		else number+=(binaryArray[i]*raiseToPower(2,i));
 	}
 	return number;
 }
@@ -239,39 +240,11 @@ int execute(int function)
  * */
 int* sumBinaryNumbers(int* binary1, int* binary2)
 {
-    int* result = (int*)malloc(sizeof(int)*bits);
-    int* negatedBinary2 = negOperand(binary2);
-    for(int i=0; i<bits; i++)
-    {
-        result[i] = binary1[i] + negatedBinary2[i] + result[i];
-        if (result[i] == 2) 
-        {
-            result[i] = 0;
-            result[i+1] = 1;
-        }
-        else if (result[i]==3)
-        {
-            result[i] = 1;
-            result[i+1] = 1;
-        }
-    }
-    return result;
-}
-
-/**
- * Subtracts two binary numbers.
- * @param binary1 - first binary number
- * @param binary2 - second binary number
- * @return pointer to binary answer
- * */
-int* subtractBinaryNumbers(int* binary1, int* binary2)
-{
-    int* result = (int*)malloc(sizeof(int)*bits);
+    int* result = (int*)calloc(bits, sizeof(int));
     int* negatedBinary1 = negOperand(binary1);
-    int* negatedBinary2 = negOperand(binary2);
     for(int i=0; i<bits; i++)
     {
-        result[i] = negatedBinary1[i] + negatedBinary2[i] + result[i];
+        result[i] = binary2[i] + negatedBinary1[i] + result[i];
         if (result[i] == 2) 
         {
             result[i] = 0;
@@ -284,6 +257,32 @@ int* subtractBinaryNumbers(int* binary1, int* binary2)
         }
     }
     return negOperand(result);
+}
+
+/**
+ * Subtracts two binary numbers.
+ * @param binary1 - first binary number
+ * @param binary2 - second binary number
+ * @return pointer to binary answer
+ * */
+int* subtractBinaryNumbers(int* binary1, int* binary2)
+{
+    int* result = (int*)calloc(bits, sizeof(int));
+    for(int i=0; i<bits; i++)
+    {
+        result[i] = binary1[i] + binary2[i] + result[i];
+        if (result[i] == 2) 
+        {
+            result[i] = 0;
+            if(i!=bits-1) result[i+1] = 1;
+        }
+        else if (result[i]==3)
+        {
+            result[i] = 1;
+            if(i!=bits-1) result[i+1] = 1;
+        }
+    }
+    return result;
 }
 
 
@@ -565,5 +564,7 @@ int* intToBinary(int number)
         number=number/2;
         length++;
     }
+    //if number is negative, set most significant bit to 1 (using 2s complement)
+    if(number<0) result[bits-1]=1;
     return result;
 }
