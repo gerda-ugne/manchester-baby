@@ -205,6 +205,7 @@ void initialiseInstructionSet()
 	strcpy(instructions[10].stringInstruction, "DVD");
 	strcpy(instructions[10].binaryInstruction, "1001");
 
+
 	/*
 	* DEBUG CODE: Prints all the opcodes and binary equivalents
 	
@@ -393,7 +394,7 @@ void firstPass(char lines[256][256])
 					//If no operand present, fill the space anyway
 					addToBuffer("0000");
 				}
-
+				
 
 			}
 
@@ -492,7 +493,6 @@ char* convertToBE(int number)
 */
 int loadCode(char lines[256][256], char fileName[])
 {
-
 	FILE *code;
 
 	code = fopen(fileName, "r");
@@ -598,7 +598,6 @@ int assignValueToLabel(char* label, int value)
 	return INVALID_INPUT_PARAMETER;
 
 }
-
 /**
  * Writes the binary output of the buffer to a text file.
  * @param fileName - name of the file to write to.
@@ -646,14 +645,14 @@ int writeToFile(char* fileName, int bits)
 		//On second iteration, we read the operand(line number)
 		else if(counter == 1)
 		{	
-
+			
 			//We print the operand first
 			fprintf(fp, "%s", bufferLine->binary);
 			//After the operand is printed, fill the space until we can print instruction
 			fprintf(fp, "%s", "00000000");
 			//Then we print the instruction to the file
 			fprintf(fp, "%s", instruction);
-
+			
 			//Then we have to fill the remaining space of the line.
 			//Print 18 0s if assembling for 32bit system
 			if(bits == 32)	fprintf(fp, "%s\n", "0000000000000000");
@@ -666,7 +665,7 @@ int writeToFile(char* fileName, int bits)
 			//Progress to next line
 			bufferLine = bufferLine->next;
 		}
-
+		
 
 	}
 
@@ -678,5 +677,5 @@ int writeToFile(char* fileName, int bits)
 
 	fclose(fp);
 	return SUCCESS;
-
+	
 }
