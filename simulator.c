@@ -140,7 +140,7 @@ int fetch()
 int decode()
 {
 	lineNumber=presentInstruction[0]+presentInstruction[1]*2+presentInstruction[2]*4+presentInstruction[3]*8+presentInstruction[4]*16;
-	int function =  presentInstruction[13]+presentInstruction[14]*2+presentInstruction[15]*4;
+	int function =  presentInstruction[13]+presentInstruction[14]*2+presentInstruction[15]*4+presentInstruction[16]*8;
 
     return function;
 }
@@ -218,6 +218,14 @@ int execute(int function)
 		// Stop program
 		case 7: //STP
 			return -1;
+        //multiplication:
+        case 8: //MTP
+            multiply(store[lineNumber]);
+            return SUCCESS;
+        //division:
+        case 9: //DVD
+            divide(store[lineNumber]);
+            return SUCCESS;
 	}
 
     return -1;
