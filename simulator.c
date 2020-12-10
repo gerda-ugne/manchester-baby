@@ -140,7 +140,7 @@ int fetch()
 int decode()
 {
 	lineNumber=presentInstruction[0]+presentInstruction[1]*2+presentInstruction[2]*4+presentInstruction[3]*8+presentInstruction[4]*16;
-	int function =  presentInstruction[13]+presentInstruction[14]*2+presentInstruction[15]*4;
+	int function =  presentInstruction[13]+presentInstruction[14]*2+presentInstruction[15]*4+presentInstruction[16]*8;
 
     return function;
 }
@@ -154,7 +154,8 @@ int convertBinaryToInt(int *binaryArray)
 	int number = 0;
 	for(int i=0; i<bits; i++)
 	{
-		number+=(binaryArray[i]*raiseToPower(2,i));
+        if(i==bits-1) number-=(binaryArray[i]*raiseToPower(2,i));
+		else number+=(binaryArray[i]*raiseToPower(2,i));
 	}
 	return number;
 }
@@ -202,8 +203,8 @@ int execute(int function)
 		// Subtracts number at store[lineNumber] from accumulator
 		case 4: //SUB
             printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
-		    accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
-		    printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
+            accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
@@ -218,6 +219,18 @@ int execute(int function)
 		// Stop program
 		case 7: //STP
 			return -1;
+        //multiplication:
+        case 8: //MTP
+            printf("Arithmetic Operation: %d * %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
+            multiply(store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));         
+            return SUCCESS;
+        //division:
+        case 9: //DVD
+            printf("Arithmetic Operation: %d / %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
+            divide(store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));         
+            return SUCCESS;
 	}
 
     return -1;
@@ -231,39 +244,11 @@ int execute(int function)
  * */
 int* sumBinaryNumbers(int* binary1, int* binary2)
 {
-    int* result = (int*)malloc(sizeof(int)*bits);
-    int* negatedBinary2 = negOperand(binary2);
-    for(int i=0; i<bits; i++)
-    {
-        result[i] = binary1[i] + negatedBinary2[i] + result[i];
-        if (result[i] == 2) 
-        {
-            result[i] = 0;
-            result[i+1] = 1;
-        }
-        else if (result[i]==3)
-        {
-            result[i] = 1;
-            result[i+1] = 1;
-        }
-    }
-    return result;
-}
-
-/**
- * Subtracts two binary numbers.
- * @param binary1 - first binary number
- * @param binary2 - second binary number
- * @return pointer to binary answer
- * */
-int* subtractBinaryNumbers(int* binary1, int* binary2)
-{
-    int* result = (int*)malloc(sizeof(int)*bits);
+    int* result = (int*)calloc(bits, sizeof(int));
     int* negatedBinary1 = negOperand(binary1);
-    int* negatedBinary2 = negOperand(binary2);
     for(int i=0; i<bits; i++)
     {
-        result[i] = negatedBinary1[i] + negatedBinary2[i] + result[i];
+        result[i] = binary2[i] + negatedBinary1[i] + result[i];
         if (result[i] == 2) 
         {
             result[i] = 0;
@@ -276,6 +261,32 @@ int* subtractBinaryNumbers(int* binary1, int* binary2)
         }
     }
     return negOperand(result);
+}
+
+/**
+ * Subtracts two binary numbers.
+ * @param binary1 - first binary number
+ * @param binary2 - second binary number
+ * @return pointer to binary answer
+ * */
+int* subtractBinaryNumbers(int* binary1, int* binary2)
+{
+    int* result = (int*)calloc(bits, sizeof(int));
+    for(int i=0; i<bits; i++)
+    {
+        result[i] = binary1[i] + binary2[i] + result[i];
+        if (result[i] == 2) 
+        {
+            result[i] = 0;
+            if(i!=bits-1) result[i+1] = 1;
+        }
+        else if (result[i]==3)
+        {
+            result[i] = 1;
+            if(i!=bits-1) result[i+1] = 1;
+        }
+    }
+    return result;
 }
 
 
@@ -487,33 +498,78 @@ int *negOperand(int *array)
     return negArray;
 }
 
-/*A function to multiply the number stored in accumulator by a times integer.
-*@param times - the multiplier
+/*A function to multiply the number stored in accumulator by a binary number.
+*@param array - the binary array holding the multiplier
 */
-void multiply(int times)
+void multiply(int *array)
 {
-    for(int i=0;i<times-1;i++)
-    {
-        *accumulator=*subtractBinaryNumbers(accumulator, accumulator);
-    }
-}
+    //converts the binary number to an integer
+    int times = convertBinaryToInt(array);
 
-/*A function to divide the number stored in accumulator by a divisor.
-*@param divisor - the number to divide by
-*/
-void divide(int divisor)
-{
-    int result =0;
+    //copies the current accumulator value to another array
     int *tempArray = (int*)calloc(bits, sizeof(int));
     memcpy(tempArray, accumulator, bits*sizeof(int));
-    for(int i=0;i<divisor;i++)
+
+    //negates the temporary array
+    tempArray=negOperand(tempArray);
+
+    //adds the starting value to the accumulator for the given times integer
+    for(int i=0;i<times-1;i++)
     {
-        if(!compareBinaryNumbers(tempArray,store[lineNumber])) break;
-        *tempArray = *subtractBinaryNumbers(tempArray, store[lineNumber]);
+        accumulator=sumBinaryNumbers(accumulator, tempArray);
+    }
+
+    //frees temporary array
+    free(tempArray);
+}
+
+/*A function to divide the number stored in accumulator by a binary array holding the divisor.
+*@param array - the binary array to divide by
+*/
+void divide(int* array)
+{
+    //the result variable holds the result of accumulator divided by divisor array
+    int result = 0;
+
+    //boolean telling function if the result of the division will be negative
+    int resultWillBeNegative=0;
+
+    //copies starting accumulator and divisor values to other arrays
+    int *tempArray = (int*)calloc(bits, sizeof(int));
+    int *tempDivisor = (int*)calloc(bits, sizeof(int));
+
+    memcpy(tempArray, accumulator, bits*sizeof(int));
+    memcpy(tempDivisor, array, bits*sizeof(int));
+
+    if(convertBinaryToInt(tempArray)<0)
+    {
+        if(convertBinaryToInt(tempDivisor)<0) {
+            //if divisor is negative, make it positive
+            tempDivisor=negOperand(tempDivisor);
+        }
+        //if accumulator is negative, make it positive
+        tempArray=negOperand(tempArray);
+    }
+
+    //if integer values of the two arrays are not both positive or negative, the result will be negative
+    if(((convertBinaryToInt(tempArray)<0)&&(convertBinaryToInt(tempDivisor)>0))||((convertBinaryToInt(tempArray)>0)&&(convertBinaryToInt(tempDivisor)<0))) resultWillBeNegative=1;
+    
+    //while the integer value of the temporary array is bigger than or equal to the divisor array...
+    while(compareBinaryNumbers(tempArray,tempDivisor)){
+        //...subtract the divisor array from the temporary array
+        tempArray = sumBinaryNumbers(tempArray, tempDivisor);
+        //increment result
         result++;
     }
-    *accumulator=*intToBinary(result);
+
+    //if the result has to be negative, negate it
+    if(resultWillBeNegative) result*=-1; 
+    //once the integer value of the temporary array is smaller than the divisor array, copy result to accumulator
+    accumulator=intToBinary(result);
+
+    //free temporary arrays
     free(tempArray);
+    free(tempDivisor);
 }
 
 /*Checks if binary1 is bigger than or equal to binary2, returns 1 if it is bigger and 0 otherwise*/
@@ -538,5 +594,7 @@ int* intToBinary(int number)
         number=number/2;
         length++;
     }
+    //if number is negative, set most significant bit to 1 (using 2s complement)
+    if(number<0) result[bits-1]=1;
     return result;
 }
