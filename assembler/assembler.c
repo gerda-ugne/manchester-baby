@@ -6,7 +6,7 @@
 
 
 /*Holds the instruction set for the assembler*/
-InstructionSet instructions[9];
+InstructionSet instructions[11];
 /*Stores memory adresses of user's labels and variables*/
 Table* symbolTable;
 /*Holds the code output*/
@@ -173,36 +173,43 @@ void printSymbolTable()
 void initialiseInstructionSet()
 {
 	strcpy(instructions[0].stringInstruction, "JMP");
-	strcpy(instructions[0].binaryInstruction, "000");
+	strcpy(instructions[0].binaryInstruction, "0000");
 
 	strcpy(instructions[1].stringInstruction, "JRP");
-	strcpy(instructions[1].binaryInstruction, "100");
+	strcpy(instructions[1].binaryInstruction, "1000");
 
 	strcpy(instructions[2].stringInstruction, "LDN");
-	strcpy(instructions[2].binaryInstruction, "010");
+	strcpy(instructions[2].binaryInstruction, "0100");
 
 	strcpy(instructions[3].stringInstruction, "STO");
-	strcpy(instructions[3].binaryInstruction, "110");
+	strcpy(instructions[3].binaryInstruction, "1100");
 
 	strcpy(instructions[4].stringInstruction, "SUB");
-	strcpy(instructions[4].binaryInstruction, "001");
+	strcpy(instructions[4].binaryInstruction, "0010");
 
 	strcpy(instructions[5].stringInstruction, "SUB");
-	strcpy(instructions[5].binaryInstruction, "101");
+	strcpy(instructions[5].binaryInstruction, "1010");
 
 	strcpy(instructions[6].stringInstruction, "CMP");
-	strcpy(instructions[6].binaryInstruction, "011");
+	strcpy(instructions[6].binaryInstruction, "0110");
 
 	strcpy(instructions[7].stringInstruction, "STP");
-	strcpy(instructions[7].binaryInstruction, "111");
+	strcpy(instructions[7].binaryInstruction, "1110");
 
 	strcpy(instructions[8].stringInstruction, "VAR");
 	strcpy(instructions[8].binaryInstruction, "   ");
 
+	strcpy(instructions[9].stringInstruction, "MTP");
+	strcpy(instructions[9].binaryInstruction, "0001");
+
+	strcpy(instructions[10].stringInstruction, "DVD");
+	strcpy(instructions[10].binaryInstruction, "1001");
+
+
 	/*
 	* DEBUG CODE: Prints all the opcodes and binary equivalents
 	
-	for(int i = 0; i < 9; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		printf("%s : %s\n", instructions[i].stringInstruction, instructions[i].binaryInstruction);
 	}*/
@@ -344,7 +351,7 @@ void firstPass(char lines[256][256])
 					{
 						//leave a blank space in the buffer for
 						//the variable
-						addToBuffer("");				
+						addToBuffer("0000");				
 
 					}
 					//otherwise
@@ -364,13 +371,11 @@ void firstPass(char lines[256][256])
 								//If label not found, add it to the table
 								addToTable(split[0]);
 								int intValue=atoi(split[2]);
-								printf("Converted integer: %d \n", intValue);
 								assignValueToLabel(split[0],intValue);
 								}
 							
 								printf("SYMBOL TABLE\n");
 								printSymbolTable();
-
 							}
 
 						}
@@ -385,6 +390,12 @@ void firstPass(char lines[256][256])
 					}
 
 				}
+				else
+				{
+					//If no operand present, fill the space anyway
+					addToBuffer("0000");
+				}
+				
 
 			}
 
@@ -524,6 +535,11 @@ int checkIfInSymbolTable(char* toCheck)
 	return 0;
 }
 
+/**
+ * Adds a new label to the symbol table.
+ * @param label - label to be added
+ * @return SUCCESS or MEMORY_ALLOCATION_ERROR
+ * */
 int addToTable(char* label)
 {
 	TableNode* toAdd = (TableNode*)malloc(sizeof(TableNode));
@@ -579,4 +595,85 @@ int assignValueToLabel(char* label, int value)
 	//If label not found
 	return INVALID_INPUT_PARAMETER;
 
+}
+/**
+ * Writes the binary output of the buffer to a text file.
+ * @param fileName - name of the file to write to.
+ * @return SUCCESS if written, FILE_IO_ERROR if there was a problem with a file
+ * */
+int writeToFile(char* fileName, int bits)
+{
+	FILE *fp;
+	fp = fopen(fileName, "w");
+	//If the file does not exist
+	if(fp == NULL) return FILE_IO_ERROR;
+
+	ListNode* bufferLine = buffer->head;
+	//If buffer is empty
+	if(bufferLine == NULL) return INVALID_OPERATION;
+
+	/** START OF THE FILE*/
+	//Print 32 0s if assembling for 32bit system
+	if(bits == 32)	fprintf(fp, "%s\n", "00000000000000000000000000000000");
+	//Print 64 0s if assembling for 64bit system
+	else if (bits == 64) fprintf(fp, "%s\n", "0000000000000000000000000000000000000000000000000000000000000000");
+	{
+
+	}
+
+	/** Counter tracks which part of the line is being fetched
+	 * 0 - instruction
+	 * 1 - operand
+	*/
+	int counter = 0;
+	char* instruction = (char*)malloc(sizeof(char)*5);
+	//While there are lines to write
+	while(bufferLine != NULL)
+	{
+		//On first iteration we receive the instruction set 
+		if(counter == 0)
+		{
+			//As instruction comes first, we copy it to a variable
+			strcpy(instruction, bufferLine->binary);
+			counter++;
+
+			//Progress to next line
+			bufferLine = bufferLine->next;
+		}
+		//On second iteration, we read the operand(line number)
+		else if(counter == 1)
+		{	
+			
+			//We print the operand first
+			fprintf(fp, "%s", bufferLine->binary);
+			//After the operand is printed, fill the space until we can print instruction
+			fprintf(fp, "%s", "00000000");
+			//Then we print the instruction to the file
+			fprintf(fp, "%s", instruction);
+			
+			//Then we have to fill the remaining space of the line.
+			//Print 18 0s if assembling for 32bit system
+			if(bits == 32)	fprintf(fp, "%s\n", "0000000000000000");
+			//Print 50 0s if assembling for 64bit system
+			else if (bits == 64) fprintf(fp, "%s\n", "000000000000000000000000000000000000000000000000");
+
+			//Reset the counter
+			counter = 0;
+
+			//Progress to next line
+			bufferLine = bufferLine->next;
+		}
+		
+
+	}
+
+	/** END OF THE FILE*/
+	//Print 32 0s if assembling for 32bit system
+	if(bits == 32)	fprintf(fp, "%s\n", "00000000000000000000000000000000");
+	//Print 64 0s if assembling for 64bit system
+	else if (bits == 64) fprintf(fp, "%s\n", "0000000000000000000000000000000000000000000000000000000000000000");
+
+	fclose(fp);
+	return SUCCESS;
+	
 }
