@@ -53,6 +53,7 @@ void userChoice()
 void runAssembler()
 { 
     char readLines[256][256];
+    int bits = 0;
     int valid = SUCCESS;
     int result=1;
 
@@ -67,6 +68,23 @@ void runAssembler()
         printf("\nFile was not found\n");
         return; //goes back to the main menu
     }
+
+    printf("The assembler can assembler code for either 32 or 64 bit system.\n");
+    int scanResult = -1;
+
+    //Input validation for correct bit output
+    while((bits!=32 && bits!=64) || scanResult == EOF)
+    {
+        //Flush input buffer in case of wrong input
+        if(scanResult == 0)  while (fgetc(stdin) != '\n');
+        printf("\nChoose the preferred bit system(64 or 32):");
+        scanResult = scanf("%d", &bits);
+    }
+
+    //Flush input buffer after
+    while (fgetc(stdin) != '\n');
+
+
    printf("File name with program in assembly language: %s\n", loadName);
 
     //Allocate memory for buffer and symbol table
@@ -90,7 +108,7 @@ void runAssembler()
     {
         //Updates saveName variable with a file name
         getFileName(saveName, length1);
-        valid= writeToFile(saveName,32);
+        valid= writeToFile(saveName,bits);
 
         if(valid != SUCCESS)
         {
