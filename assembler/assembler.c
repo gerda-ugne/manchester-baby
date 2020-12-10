@@ -524,6 +524,11 @@ int checkIfInSymbolTable(char* toCheck)
 	return 0;
 }
 
+/**
+ * Adds a new label to the symbol table.
+ * @param label - label to be added
+ * @return SUCCESS or MEMORY_ALLOCATION_ERROR
+ * */
 int addToTable(char* label)
 {
 	TableNode* toAdd = (TableNode*)malloc(sizeof(TableNode));
