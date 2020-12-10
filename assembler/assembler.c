@@ -621,39 +621,49 @@ int writeToFile(char* fileName, int bits)
 
 	}
 
-	/** Counter tracks which part of the line is being printed
-	 * 0 - opcode
+	/** Counter tracks which part of the line is being fetched
+	 * 0 - instruction
 	 * 1 - operand
-	 * 2 - instruction
 	*/
 	int counter = 0;
-
+	char* instruction = (char*)malloc(sizeof(char)*5);
 	//While there are lines to write
 	while(bufferLine != NULL)
 	{
-		//Write the output to the file
-		fprintf(fp, "%s",bufferLine->binary);
-
-		if(counter == 0) counter++;
-		//After the operand is printed, fill the space 5-12
-		else if(counter==1)
-		{		
-			fprintf(fp, "%s", "000000");
-			counter++;
-		}
-		//Fill the space 16-32 or 16-64
-		else if(counter == 2)
+		//On first iteration we receive the instruction set 
+		if(counter == 0)
 		{
-			//Print 16 0s if assembling for 32bit system
-			if(bits == 32)	fprintf(fp, "%s\n", "00000000000000");
-			//Print 48 0s if assembling for 64bit system
-			else if (bits == 64) fprintf(fp, "%s\n", "0000000000000000000000000000000000000000000000");
+			//As instruction comes first, we copy it to a variable
+			strcpy(instruction, bufferLine->binary);
+			counter++;
 
+			//Progress to next line
+			bufferLine = bufferLine->next;
+		}
+		//On second iteration, we read the operand(line number)
+		else if(counter == 1)
+		{	
+			
+			//We print the operand first
+			fprintf(fp, "%s", bufferLine->binary);
+			//After the operand is printed, fill the space until we can print instruction
+			fprintf(fp, "%s", "00000000");
+			//Then we print the instruction to the file
+			fprintf(fp, "%s", instruction);
+			
+			//Then we have to fill the remaining space of the line.
+			//Print 18 0s if assembling for 32bit system
+			if(bits == 32)	fprintf(fp, "%s\n", "0000000000000000");
+			//Print 50 0s if assembling for 64bit system
+			else if (bits == 64) fprintf(fp, "%s\n", "000000000000000000000000000000000000000000000000");
+
+			//Reset the counter
 			counter = 0;
+
+			//Progress to next line
+			bufferLine = bufferLine->next;
 		}
 		
-
-		bufferLine = bufferLine->next;
 
 	}
 
