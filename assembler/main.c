@@ -124,9 +124,9 @@ void runAssembler()
 }
 
 
-/*Gets a name of a file
-@param name - an array of characters where name is stored (a pointer)
-@param size - a length of an array
+/** Gets a name of a file
+* @param name - an array of characters where name is stored (a pointer)
+* @param size - a length of an array
 */
 void getFileName(char name[],int size)
 {  
@@ -146,11 +146,11 @@ void getFileName(char name[],int size)
         }
     }while(k==0);
 }
-/*
-Makes sure that int is valid and within the range
-@param min - a minimum value 
-@param max - a maximum value
-@param *number - a pointer to a variable
+/**
+* Makes sure that int is valid and within the range
+* @param min - a minimum value 
+* @param max - a maximum value
+* @param *number - a pointer to a variable
 */
 void validateInt( int min, int max, int *number)
 {
