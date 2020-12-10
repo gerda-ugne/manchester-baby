@@ -15,7 +15,7 @@ typedef struct instructionSet{
 //Holds the human-readable instruction
 char stringInstruction[4];
 //Holds the binary equivalent of the instruction
-char binaryInstruction[4];
+char binaryInstruction[5];
 
 
 } InstructionSet;
@@ -81,5 +81,7 @@ char* convertToBE(int number);
 void firstPass(char lines[256][256]);
 /**Loads the input code into the assembler*/
 int loadCode(char lines[256][256]);
+/**Writes the binary output to a text file*/
+int writeToFile(char* fileName, int bits);
 
 #endif
