@@ -203,8 +203,8 @@ int execute(int function)
 		// Subtracts number at store[lineNumber] from accumulator
 		case 4: //SUB
             printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
-		    accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
-		    printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
+            accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
@@ -221,11 +221,15 @@ int execute(int function)
 			return -1;
         //multiplication:
         case 8: //MTP
+            printf("Arithmetic Operation: %d * %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
             multiply(store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));         
             return SUCCESS;
         //division:
         case 9: //DVD
+            printf("Arithmetic Operation: %d / %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
             divide(store[lineNumber]);
+            printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));         
             return SUCCESS;
 	}
 
@@ -506,10 +510,13 @@ void multiply(int *array)
     int *tempArray = (int*)calloc(bits, sizeof(int));
     memcpy(tempArray, accumulator, bits*sizeof(int));
 
+    //negates the temporary array
+    tempArray=negOperand(tempArray);
+
     //adds the starting value to the accumulator for the given times integer
     for(int i=0;i<times-1;i++)
     {
-        *accumulator=*sumBinaryNumbers(accumulator, tempArray);
+        accumulator=sumBinaryNumbers(accumulator, tempArray);
     }
 
     //frees temporary array
@@ -524,27 +531,50 @@ void divide(int* array)
     //the result variable holds the result of accumulator divided by divisor array
     int result = 0;
 
-    //copies starting accumulator value to another array
-    int *tempArray = (int*)calloc(bits, sizeof(int));
-    memcpy(tempArray, accumulator, bits*sizeof(int));
+    //boolean telling function if the result of the division will be negative
+    int resultWillBeNegative=0;
 
+    //copies starting accumulator and divisor values to other arrays
+    int *tempArray = (int*)calloc(bits, sizeof(int));
+    int *tempDivisor = (int*)calloc(bits, sizeof(int));
+
+    memcpy(tempArray, accumulator, bits*sizeof(int));
+    memcpy(tempDivisor, array, bits*sizeof(int));
+
+    if(convertBinaryToInt(tempArray)<0)
+    {
+        if(convertBinaryToInt(tempDivisor)<0) {
+            //if divisor is negative, make it positive
+            tempDivisor=negOperand(tempDivisor);
+        }
+        //if accumulator is negative, make it positive
+        tempArray=negOperand(tempArray);
+    }
+
+    //if integer values of the two arrays are not both positive or negative, the result will be negative
+    if(((convertBinaryToInt(tempArray)<0)&&(convertBinaryToInt(tempDivisor)>0))||((convertBinaryToInt(tempArray)>0)&&(convertBinaryToInt(tempDivisor)<0))) resultWillBeNegative=1;
+    
     //while the integer value of the temporary array is bigger than or equal to the divisor array...
-    while(compareBinaryNumbers(tempArray,array)){
+    while(compareBinaryNumbers(tempArray,tempDivisor)){
         //...subtract the divisor array from the temporary array
-        *tempArray = *subtractBinaryNumbers(tempArray, array);
+        tempArray = sumBinaryNumbers(tempArray, tempDivisor);
         //increment result
         result++;
     }
+
+    //if the result has to be negative, negate it
+    if(resultWillBeNegative) result*=-1; 
     //once the integer value of the temporary array is smaller than the divisor array, copy result to accumulator
-    *accumulator=*intToBinary(result);
-    //free temporary array
+    accumulator=intToBinary(result);
+
+    //free temporary arrays
     free(tempArray);
+    free(tempDivisor);
 }
 
 /*Checks if binary1 is bigger than or equal to binary2, returns 1 if it is bigger and 0 otherwise*/
 int compareBinaryNumbers(int* binary1, int* binary2)
 {
-
     if(convertBinaryToInt(binary1)>=convertBinaryToInt(binary2)) return 1;
     return 0;
 }
