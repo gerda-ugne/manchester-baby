@@ -1,3 +1,11 @@
+/* Group number: 5
+*  Team members:
+*       Matthew Bain    - 190012264
+*       Aidan Dolan     - 120014811
+*       Sem Jasaityte   - 190014736
+*       Laura Naslenaite- 190013642
+*       Gerda Pupelyte  - 190013631
+*/
 #include <stdio.h>
 #include <string.h> 
 #include <stdlib.h>
