@@ -351,7 +351,7 @@ void firstPass(char lines[256][256])
 					{
 						//leave a blank space in the buffer for
 						//the variable
-						addToBuffer("0000");				
+						addToBuffer("");				
 
 					}
 					//otherwise
@@ -515,8 +515,6 @@ void secondPass(char lines[256][256])
 			//store the first result to the array
 			split[j] = str;
 
-			printf("%s\n", str);
-
 			//loop through all of the instruction set
 			for(int k = 0; k < 9; k++)
 			{
@@ -531,7 +529,6 @@ void secondPass(char lines[256][256])
 					//set the counter so that the next slot
 					//will be 2
 					j = 1;
-
 					break;
 				}
 			}
@@ -557,8 +554,6 @@ void secondPass(char lines[256][256])
 					//set the array location to NULL
 					split[j] = NULL;
 				}
-
-				printf("%d: %s ", j, split[j]);
 				
 				//increment iterator
 				j++;
@@ -582,27 +577,38 @@ void secondPass(char lines[256][256])
 						//start at the head of the buffer
 						ListNode *pNext = buffer->head;
 
+						//start at the head of the table
 						TableNode *tNext = symbolTable->head;
 
-						//loop until there is no next node
+						//loop until there is no next label in the table
 						while(tNext != NULL)
 						{
+							//if the label matches the found operand
 							if(strcmp(tNext->label, split[2]) == 0)
 							{
-								found = 1;
+								//set the found variable to the value
+								found = tNext->value;
+								//break the loop
 								break;
 							}
 							//move to the next node
 							tNext = tNext->next;
 						}
 
+						//loop until there is no next entry in the buffer
 						while(pNext != NULL)
 						{
-							if(strcmp(pNext->binary, "0000") == 0)
+							//if the space in the buffer is empty
+							if(strcmp(pNext->binary, "") == 0)
 							{
-								strcpy(pNext->binary, convertToBE(tNext->value));
+								//insert the value in binary into the slot
+								strcpy(pNext->binary, convertToBE(found));
+								//break the loop
 								break;
 							}
+
+							//move to next node
+							pNext = pNext->next;
 						}
 
 					}
@@ -663,7 +669,7 @@ char* convertToBE(int number)
 
 	//loop down through the array until the number
 	//becomes 0
-	for(int i = 12; number > 0; i--)
+	for(int i = 12; i >= 0; i--)
 	{
 		//store the result of the passed number
 		//minus the current binary column

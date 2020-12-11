@@ -79,6 +79,8 @@ void printSymbolTable();
 char* convertToBE(int number);
 /**Completes the first pass of the assembler*/
 void firstPass(char lines[256][256]);
+/**Completes the second pass of the assembler*/
+void secondPass(char lines[256][256]);
 /**Loads the input code into the assembler*/
 int loadCode(char lines[256][256]);
 /**Writes the binary output to a text file*/

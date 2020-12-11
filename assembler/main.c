@@ -19,6 +19,12 @@ int main()
 	//Complete the first pass of the assembler
 	firstPass(readLines);
 
+	char newRead[256][256];
+
+	loadCode(newRead);
+
+	secondPass(newRead);
+
 	//Write the outputs to a file
 	writeToFile("text.txt",32);
 	//Clear the memory
