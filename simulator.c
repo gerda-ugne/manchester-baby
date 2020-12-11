@@ -48,6 +48,8 @@ void runSimulator()
         printf("\nStore:\n");
         displayStore();
     }
+
+    if(executeStatus == -1) printf("\n STP - The simulation was halted.\n");
     
 }
 
