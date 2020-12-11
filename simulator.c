@@ -206,16 +206,16 @@ int execute(int function)
             printf("MNEMONICS: STO\n");
 			memcpy(store[lineNumber], accumulator, bits*sizeof(int));
 			return SUCCESS;
-		// Subtracts number at store[lineNumber] from accumulator
+		// Subtracts number at store[lineNumber] from accumulator (practically adds 2 negative numbers: -# -#)
 		case 4: //SUB
             printf("MNEMONICS: SUB\n");
             printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
             accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
-		//Does the same as case 4
-		case 5: //SUB
-            printf("MNEMONICS: SUB\n");
+		// Adds 2 numbers (practically substracts a negative number(value in accumulator) from a positive(value in store): -# + # )
+		case 5: //SUM
+            printf("MNEMONICS: SUM\n");
             printf("Arithmetic Operation: %d + %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
 			accumulator=subtractBinaryNumbers(accumulator, store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));			
