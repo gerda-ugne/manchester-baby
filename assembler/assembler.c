@@ -439,6 +439,189 @@ void firstPass(char lines[256][256])
 
 }
 
+void secondPass(char lines[256][256])
+{
+	//Line number is the iterator for the lines of the
+	//code that have been passed
+	int lineNumber = 0;
+
+	//the following will loop until the end of
+	//line character is the first character in
+	//a line
+	while(lines[lineNumber][0] != '\0')
+	{
+		/*
+		* The delimiter is comprised of several elements.
+		* It will be either:
+		* - a space
+		* - a new line
+		* - a return command
+		* - a tab
+		*/
+		char delimiter[] = " \n\t\r";
+
+		//j will be the iterator for the split string
+		//array
+		int j = 0;
+
+		//pointer to store the parts of the split
+		//string
+		char *str;
+
+		/*
+		* The split parts will be stored as follows:
+		* 
+		* split[0] - Label
+		* split[1] - Opcode
+		* split[2] - Operand
+		*/
+		char *split[3];
+
+		//if the line starts with a ;, that indicates
+		//the line is a comment, so we can skip over
+		//this line
+		if(lines[lineNumber][0] != ';')
+		{
+			//split the line about the delimiter
+			str = strtok(lines[lineNumber], delimiter);
+
+			//store the first result to the array
+			split[j] = str;
+
+			//loop through all of the instruction set
+			for(int k = 0; k < 9; k++)
+			{
+				//if the first string matches any of the instruction
+				//set, it must be an opcode
+				if(strcmp(split[j], instructions[k].stringInstruction) == 0)
+				{
+					//clear the first slot
+					split[j] = NULL;
+					//store the opcode in the second slot
+					split[1] = str;
+					//set the counter so that the next slot
+					//will be 2
+					j = 1;
+					break;
+				}
+			}
+
+			//increment iterator
+			j++;
+
+			//while the split array is not full
+			while(j < 3)
+			{
+				//continue splitting the line about the delimiter
+				str = strtok(NULL, delimiter);
+
+				//if the split string is not a ;
+				if(strcmp(str, ";") != 0)
+				{
+					//store the string in the array
+					split[j] = str;
+				}
+				//otherwise
+				else
+				{
+					//set the array location to NULL
+					split[j] = NULL;
+				}
+				
+				//increment iterator
+				j++;
+			}
+
+			//if an opcode is present
+			if(split[1] != NULL)
+			{	
+
+				//if there is an operand
+				if(split[2] != NULL)
+				{
+
+					//if the operand is not numberic, it must be
+					//an undeclared variable
+					if(isdigit(split[2][0]) == 0)
+					{
+						
+						int found = 0;
+
+						//start at the head of the buffer
+						ListNode *pNext = buffer->head;
+
+						//start at the head of the table
+						TableNode *tNext = symbolTable->head;
+
+						//loop until there is no next label in the table
+						while(tNext != NULL)
+						{
+							//if the label matches the found operand
+							if(strcmp(tNext->label, split[2]) == 0)
+							{
+								//set the found variable to the value
+								found = tNext->value;
+								//break the loop
+								break;
+							}
+							//move to the next node
+							tNext = tNext->next;
+						}
+
+						//loop until there is no next entry in the buffer
+						while(pNext != NULL)
+						{
+							//if the space in the buffer is empty
+							if(strcmp(pNext->binary, "") == 0)
+							{
+								//insert the value in binary into the slot
+								strcpy(pNext->binary, convertToBE(found));
+								//break the loop
+								break;
+							}
+
+							//move to next node
+							pNext = pNext->next;
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+		else
+		{
+			//since the comment line can be ignored
+			//fill the current split line with NULL
+			//pointers
+			for(int k = 0; k < 3; k++)
+			{
+				split[k] = NULL;
+			}
+		}
+
+		//move to next line of code
+		lineNumber++;
+		/*
+		* DEBUG CODE: Print the values in the array
+		*/
+		for(int k = 0; k < 3; k++)
+		{
+			printf("%d: %s ", k, split[k]);
+		}
+		printf("\n");
+
+	}
+
+	/*
+	* DEBUG CODE: Display the buffer
+	*/ 
+	printBuffer();
+}
+
+
 /*
 / Convert passed number into big endian binary 
 / and store it in the passed array
@@ -654,16 +837,16 @@ int writeToFile(char* fileName, int bits)
 		else if(counter == 1)
 		{	
 			
-			//We print the operand first
+			//We print the operand first - 0 to 4
 			fprintf(fp, "%s", bufferLine->binary);
-			//After the operand is printed, fill the space until we can print instruction
+			//After the operand is printed, fill the space until we can print instruction - 5 to 12
 			fprintf(fp, "%s", "00000000");
 			//Then we print the instruction to the file
 			fprintf(fp, "%s", instruction);
 			
 			//Then we have to fill the remaining space of the line.
-			//Print 18 0s if assembling for 32bit system
-			if(bits == 32)	fprintf(fp, "%s\n", "0000000000000000");
+			//Print 15 0s if assembling for 32bit system
+			if(bits == 32)	fprintf(fp, "%s\n", "000000000000000");
 			//Print 50 0s if assembling for 64bit system
 			else if (bits == 64) fprintf(fp, "%s\n", "000000000000000000000000000000000000000000000000");
 

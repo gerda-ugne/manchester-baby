@@ -103,7 +103,8 @@ void runAssembler()
 
     //Complete the first pass of the assembler
 	firstPass(readLines);	
-	
+	char newRead[256][256];
+	secondPass(newRead);
   
     printf("\nMachine code was created successfully!\n");
     printf("To save it, enter a file name (up to 50 characters)\n");
