@@ -365,13 +365,46 @@ void firstPass(char lines[256][256])
 							//check if the variable is already in the symbol table
 							if(split[0] != NULL)
 							{	
+
+								//array to store commaless label
+								char noCol[10];
+								//iterator for current label
+								int k = 0;
+								//iterator for new label
+								int l = 0;
+
+								//while the string is not finished
+								while(split[0][k] != '\0')
+								{
+									//if the character at the current index
+									//is not a comma
+									if(split[0][k] != ':')
+									{
+										//copy the character to the new array
+										noCol[l] = split[0][k];
+										//move to the next slot of the new
+										//array
+										l++;
+									}
+
+									//move to the next character of the
+									//label
+									k++;
+								}
+
+								//finish the new label with the string
+								//end character
+								noCol[l] = '\0'; 
 							
 								if(checkIfInSymbolTable(split[0]) == 0)
 								{
-								//If label not found, add it to the table
-								addToTable(split[0]);
-								int intValue=atoi(split[2]);
-								assignValueToLabel(split[0],intValue);
+
+									//If label not found, add it to the table
+									addToTable(noCol);
+									int intValue=atoi(split[2]);
+
+									assignValueToLabel(noCol, intValue);
+
 								}
 							
 								printf("SYMBOL TABLE\n");
@@ -419,7 +452,7 @@ void firstPass(char lines[256][256])
 		*/
 		for(int k = 0; k < 3; k++)
 		{
-			printf("%d: %s", k, split[k]);
+			printf("%d: %s ", k, split[k]);
 		}
 		printf("\n");
 
@@ -430,6 +463,183 @@ void firstPass(char lines[256][256])
 	*/ 
 	printBuffer();
 
+}
+
+void secondPass(char lines[256][256])
+{
+	//Line number is the iterator for the lines of the
+	//code that have been passed
+	int lineNumber = 0;
+
+	//the following will loop until the end of
+	//line character is the first character in
+	//a line
+	while(lines[lineNumber][0] != '\0')
+	{
+		/*
+		* The delimiter is comprised of several elements.
+
+		* It will be either:
+		* - a space
+		* - a new line
+		* - a return command
+		* - a tab
+		*/
+		char delimiter[] = " \n\t\r";
+
+		//j will be the iterator for the split string
+		//array
+		int j = 0;
+
+		//pointer to store the parts of the split
+		//string
+		char *str;
+
+		/*
+		* The split parts will be stored as follows:
+		* 
+		* split[0] - Label
+		* split[1] - Opcode
+		* split[2] - Operand
+		*/
+		char *split[3];
+
+		//if the line starts with a ;, that indicates
+		//the line is a comment, so we can skip over
+		//this line
+		if(lines[lineNumber][0] != ';')
+		{
+			//split the line about the delimiter
+			str = strtok(lines[lineNumber], delimiter);
+
+			//store the first result to the array
+			split[j] = str;
+
+			printf("%s\n", str);
+
+			//loop through all of the instruction set
+			for(int k = 0; k < 9; k++)
+			{
+				//if the first string matches any of the instruction
+				//set, it must be an opcode
+				if(strcmp(split[j], instructions[k].stringInstruction) == 0)
+				{
+					//clear the first slot
+					split[j] = NULL;
+					//store the opcode in the second slot
+					split[1] = str;
+					//set the counter so that the next slot
+					//will be 2
+					j = 1;
+
+					break;
+				}
+			}
+
+			//increment iterator
+			j++;
+
+			//while the split array is not full
+			while(j < 3)
+			{
+				//continue splitting the line about the delimiter
+				str = strtok(NULL, delimiter);
+
+				//if the split string is not a ;
+				if(strcmp(str, ";") != 0)
+				{
+					//store the string in the array
+					split[j] = str;
+				}
+				//otherwise
+				else
+				{
+					//set the array location to NULL
+					split[j] = NULL;
+				}
+
+				printf("%d: %s ", j, split[j]);
+				
+				//increment iterator
+				j++;
+			}
+
+			//if an opcode is present
+			if(split[1] != NULL)
+			{	
+
+				//if there is an operand
+				if(split[2] != NULL)
+				{
+
+					//if the operand is not numberic, it must be
+					//an undeclared variable
+					if(isdigit(split[2][0]) == 0)
+					{
+						
+						int found = 0;
+
+						//start at the head of the buffer
+						ListNode *pNext = buffer->head;
+
+						TableNode *tNext = symbolTable->head;
+
+						//loop until there is no next node
+						while(tNext != NULL)
+						{
+							if(strcmp(tNext->label, split[2]) == 0)
+							{
+								found = 1;
+								break;
+							}
+							//move to the next node
+							tNext = tNext->next;
+						}
+
+						while(pNext != NULL)
+						{
+							if(strcmp(pNext->binary, "0000") == 0)
+							{
+								strcpy(pNext->binary, convertToBE(tNext->value));
+								break;
+							}
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+		else
+		{
+			//since the comment line can be ignored
+			//fill the current split line with NULL
+			//pointers
+			for(int k = 0; k < 3; k++)
+			{
+				split[k] = NULL;
+			}
+		}
+
+		//move to next line of code
+		lineNumber++;
+		/*
+		* DEBUG CODE: Print the values in the array
+		*/
+		for(int k = 0; k < 3; k++)
+		{
+			printf("%d: %s ", k, split[k]);
+		}
+		printf("\n");
+
+	}
+
+	/*
+	* DEBUG CODE: Display the buffer
+	*/ 
+	printBuffer();
 }
 
 /*
