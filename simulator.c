@@ -186,49 +186,59 @@ int execute(int function)
 	switch(function) {
 		// Jump to the instruction at the address obtained from the specified memory address at lineNumber
 		case 0: //JMP
+            printf("MNEMONICS: JMP\n");
 			controlInstruction= lineNumber;
 			return SUCCESS;
 		// Jump to the instruction at controlInstruction plus lineNumber
 		case 1: //JRP
+            printf("MNEMONICS: JRP\n");
 			controlInstruction+=lineNumber;
 			return SUCCESS;
 		// Load the number from store[lineNumber] to accumulator
 		case 2: //LDN
+            printf("MNEMONICS: LDN\n");
 			//memcpy(accumulator, store[lineNumber], bits*sizeof(int));
             memcpy(accumulator, negOperand(store[lineNumber]), bits*sizeof(int));
 			printf("OUTPUT: %d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		// Stores number in accumulator to store[lineNumber]
 		case 3: //STO
+            printf("MNEMONICS: STO\n");
 			memcpy(store[lineNumber], accumulator, bits*sizeof(int));
 			return SUCCESS;
 		// Subtracts number at store[lineNumber] from accumulator
 		case 4: //SUB
+            printf("MNEMONICS: SUB\n");
             printf("Arithmetic Operation: %d - %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
             accumulator=sumBinaryNumbers(accumulator, store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));
 			return SUCCESS;
 		//Does the same as case 4
 		case 5: //SUB
+            printf("MNEMONICS: SUB\n");
             printf("Arithmetic Operation: %d + %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
 			accumulator=subtractBinaryNumbers(accumulator, store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));			
 			return SUCCESS;
 		// If accumulator contains a negative value, skip next instruction
 		case 6: //CMP
+            printf("MNEMONICS: CMP\n");
 			if(convertBinaryToInt(accumulator)<0) controlInstruction++;
 			return SUCCESS;
 		// Stop program
 		case 7: //STP
+            printf("MNEMONICS: STP - PROCESS HALTED.\n");
 			return -1;
         //multiplication:
         case 8: //MTP
+            printf("MNEMONICS: MTP\n");
             printf("Arithmetic Operation: %d * %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
             multiply(store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));         
             return SUCCESS;
         //division:
         case 9: //DVD
+            printf("MNEMONICS: DVD\n");
             printf("Arithmetic Operation: %d / %d\n", convertBinaryToInt(accumulator), convertBinaryToInt(store[lineNumber]));
             divide(store[lineNumber]);
             printf("OUTPUT:%d\n", convertBinaryToInt(accumulator));         
