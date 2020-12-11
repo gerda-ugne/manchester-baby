@@ -860,16 +860,16 @@ int writeToFile(char* fileName, int bits)
 		else if(counter == 1)
 		{	
 			
-			//We print the operand first
+			//We print the operand first - 0 to 4
 			fprintf(fp, "%s", bufferLine->binary);
-			//After the operand is printed, fill the space until we can print instruction
+			//After the operand is printed, fill the space until we can print instruction - 5 to 12
 			fprintf(fp, "%s", "00000000");
 			//Then we print the instruction to the file
 			fprintf(fp, "%s", instruction);
 			
 			//Then we have to fill the remaining space of the line.
-			//Print 18 0s if assembling for 32bit system
-			if(bits == 32)	fprintf(fp, "%s\n", "0000000000000000");
+			//Print 15 0s if assembling for 32bit system
+			if(bits == 32)	fprintf(fp, "%s\n", "000000000000000");
 			//Print 50 0s if assembling for 64bit system
 			else if (bits == 64) fprintf(fp, "%s\n", "000000000000000000000000000000000000000000000000");
 
