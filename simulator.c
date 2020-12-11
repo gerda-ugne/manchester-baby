@@ -606,13 +606,11 @@ int compareBinaryNumbers(int* binary1, int* binary2)
 int* intToBinary(int number)
 {
     int* result = (int*)calloc(bits, sizeof(int));
-    int length=0;
     //Calculates a regular binary number from the given integer
     for(int i=0; number>0;i++)
     {
         result[i]=number%2;
         number=number/2;
-        length++;
     }
     //if number is negative, set most significant bit to 1 (using 2s complement)
     if(number<0) result[bits-1]=1;
